@@ -13,21 +13,27 @@ public class Genome {
         this.genes = geneArray.clone();
     }
 
-    public static Genome breedGenome(Animal left, Animal right) {
+    public static Genome breedGenome(Animal left, Animal right, GeneArrayMutator mutator) {
+        if (left.getGenome().length() != right.getGenome().length())
+            throw new IllegalArgumentException("Genomes have to be the same length");
+
         if (ThreadLocalRandom.current().nextBoolean()) {
             Animal temp = left;
             left = right;
             right = temp;
         }
+
         int n = left.getGenome().length();
         int divide = n * left.getEnergy() / (left.getEnergy() + right.getEnergy());
+
         int[] geneArray = new int[n];
         for (int i = 0; i < divide; i++) {
             geneArray[i] = left.getGenome().get(i);
         }
-
         for (int i = divide; i < n; i++)
             geneArray[i] = right.getGenome().get(i);
+
+        mutator.mutate(geneArray);
         return new Genome(geneArray);
     }
 
