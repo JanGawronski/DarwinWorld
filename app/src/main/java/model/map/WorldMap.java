@@ -2,10 +2,13 @@ package model.map;
 
 import model.MapDirection;
 import model.Vector2d;
-import model.elements.Animal;
 import model.elements.WorldElement;
+import model.elements.animal.Animal;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class WorldMap {
     protected final Map<Vector2d, Animal> animals = new HashMap<>();
