@@ -2,23 +2,31 @@ package model.elements;
 
 import model.MapDirection;
 import model.Vector2d;
+import model.elements.geneselector.NextGeneSelector;
+
+import java.util.concurrent.ThreadLocalRandom;
 
 public class Animal implements WorldElement {
+    private int energy;
+    private final int[] genome;
+    private int activeGene;
+
+    private final NextGeneSelector selector;
     private MapDirection orientation;
     private Vector2d position;
 
-    public Animal(MapDirection orientation, Vector2d position) {
+    public Animal(int startingEnergy, int[] genome, NextGeneSelector selector, MapDirection orientation, Vector2d position) {
+        this.energy = startingEnergy;
+        this.genome = genome;
+        this.activeGene = ThreadLocalRandom.current().nextInt(0, this.genome.length);
+        this.selector = selector;
         this.orientation = orientation;
         this.position = position;
     }
 
-    public Animal(MapDirection orientation) {
-        this(orientation, new Vector2d(2, 2));
-    }
-
-    @Override
-    public Vector2d getPosition() {
-        return position;
+    public void move() {
+        //moving
+        activeGene = selector.nextGene(genome, activeGene);
     }
 
     @Override
@@ -30,8 +38,17 @@ public class Animal implements WorldElement {
         return orientation;
     }
 
-    public void move() {
+    @Override
+    public Vector2d getPosition() {
+        return position;
+    }
 
+    public int getEnergy() {
+        return energy;
+    }
+
+    public int[] getGenome() {
+        return genome;
     }
 
     @Override
