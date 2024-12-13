@@ -23,22 +23,22 @@ public class WorldMap {
         notifyMapChanged("place at " + animal.getPosition());
     }
 
-    
+
     public boolean canMoveTo(Vector2d position) {
         return !animals.containsKey(position);
     }
 
-    
+
     public boolean isOccupied(Vector2d position) {
         return animals.containsKey(position);
     }
 
-    
+
     public WorldElement objectAt(Vector2d position) {
         return animals.get(position);
     }
 
-    
+
     public void move(Animal animal) {
         if (!animals.containsValue(animal)) return;
         Vector2d prevPosition = animal.getPosition();
@@ -49,7 +49,7 @@ public class WorldMap {
             notifyMapChanged("move at %s".formatted(prevPosition));
     }
 
-    
+
     public Collection<WorldElement> getElements() {
         return new ArrayList<>(animals.values());
     }
@@ -60,12 +60,12 @@ public class WorldMap {
         return visualizer.draw(boundary.lowerLeft(), boundary.upperRight());
     }
 
-    
+
     public void addObserver(MapChangeListener listener) {
         listeners.add(listener);
     }
 
-    
+
     public void removeObserver(MapChangeListener listener) {
         listeners.remove(listener);
     }

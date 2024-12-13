@@ -2,18 +2,17 @@ package model.elements;
 
 import model.MapDirection;
 import model.Vector2d;
-import model.elements.geneselector.NextGeneSelector;
+import model.elements.geneselectors.NextGeneSelector;
 
 import java.util.concurrent.ThreadLocalRandom;
 
 public class Animal implements WorldElement {
-    private int energy;
     private final int[] genome;
-    private int activeGene;
-
     private final NextGeneSelector selector;
-    private MapDirection orientation;
-    private Vector2d position;
+    private final int energy;
+    private int activeGene;
+    private final MapDirection orientation;
+    private final Vector2d position;
 
     public Animal(int startingEnergy, int[] genome, NextGeneSelector selector, MapDirection orientation, Vector2d position) {
         this.energy = startingEnergy;
