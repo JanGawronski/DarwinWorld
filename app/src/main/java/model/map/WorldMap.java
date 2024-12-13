@@ -50,23 +50,18 @@ public class WorldMap {
     }
 
 
-    public Collection<WorldElement> getElements() {
-        return new ArrayList<>(animals.values());
-    }
-
-
     @Override
     public String toString() {
         return visualizer.draw(boundary.lowerLeft(), boundary.upperRight());
     }
 
 
-    public void addObserver(MapChangeListener listener) {
+    public void addListener(MapChangeListener listener) {
         listeners.add(listener);
     }
 
 
-    public void removeObserver(MapChangeListener listener) {
+    public void removeListener(MapChangeListener listener) {
         listeners.remove(listener);
     }
 

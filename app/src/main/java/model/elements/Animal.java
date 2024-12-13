@@ -14,13 +14,17 @@ public class Animal implements WorldElement {
     private final MapDirection orientation;
     private final Vector2d position;
 
-    public Animal(int startingEnergy, int[] genome, NextGeneSelector selector, MapDirection orientation, Vector2d position) {
+    public Animal(int startingEnergy, int[] genome, int startingGene, NextGeneSelector selector, MapDirection orientation, Vector2d position) {
         this.energy = startingEnergy;
         this.genome = genome;
-        this.activeGene = ThreadLocalRandom.current().nextInt(0, this.genome.length);
+        this.activeGene = startingGene;
         this.selector = selector;
         this.orientation = orientation;
         this.position = position;
+    }
+
+    public Animal(int startingEnergy, int[] genome, NextGeneSelector selector, Vector2d position) {
+        this(startingEnergy, genome, ThreadLocalRandom.current().nextInt(0, genome.length), selector, MapDirection.randomDirection(), position);
     }
 
     public void move() {
