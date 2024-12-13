@@ -15,6 +15,10 @@ public class Animal implements WorldElement {
     private final Vector2d position;
 
     public Animal(int startingEnergy, int[] genome, int startingGene, NextGeneSelector selector, MapDirection orientation, Vector2d position) {
+        if (genome.length == 0)
+            throw new IllegalArgumentException("Animal cannot have 0 genes");
+        if (startingGene >= genome.length || startingGene < 0)
+            throw new IllegalArgumentException("Starting gene is out of bounds");
         this.energy = startingEnergy;
         this.genome = genome;
         this.activeGene = startingGene;
