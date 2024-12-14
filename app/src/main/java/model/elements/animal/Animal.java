@@ -3,6 +3,7 @@ package model.elements.animal;
 import model.MapDirection;
 import model.Vector2d;
 import model.elements.WorldElement;
+import model.elements.animal.geneselectors.FullPredestination;
 import model.elements.animal.geneselectors.NextGeneSelector;
 
 import java.util.concurrent.ThreadLocalRandom;
@@ -28,6 +29,10 @@ public class Animal implements WorldElement {
 
     public Animal(int startingEnergy, Genome genome, NextGeneSelector selector, Vector2d position) {
         this(startingEnergy, genome, ThreadLocalRandom.current().nextInt(0, genome.length()), selector, MapDirection.randomDirection(), position);
+    }
+
+    public Animal(int startingEnergy, Genome genome) {
+        this(startingEnergy, genome, new FullPredestination(), new Vector2d(0, 0));
     }
 
     public void move() {

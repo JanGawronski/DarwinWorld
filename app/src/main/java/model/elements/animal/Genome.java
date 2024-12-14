@@ -38,6 +38,11 @@ public class Genome {
     }
 
     @Override
+    public String toString() {
+        return "Genome " + Arrays.toString(genes);
+    }
+
+    @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
         Genome genome = (Genome) o;
