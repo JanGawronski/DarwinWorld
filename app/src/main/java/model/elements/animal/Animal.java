@@ -4,15 +4,17 @@ import model.MapDirection;
 import model.Vector2d;
 import model.elements.WorldElement;
 import model.elements.animal.geneselectors.NextGeneSelector;
+import model.map.MoveConverter;
 import model.map.WorldMap;
+import model.util.Pair;
 
 import java.util.concurrent.ThreadLocalRandom;
 
 public class Animal implements WorldElement {
     private final Genome genome;
-    private final int energy;
-    private final MapDirection orientation;
-    private final Vector2d position;
+    private int energy;
+    private MapDirection orientation;
+    private Vector2d position;
     private int activeGene;
 
     public Animal(int startingEnergy, Genome genome, int startingGene, MapDirection orientation, Vector2d position) {
@@ -33,8 +35,16 @@ public class Animal implements WorldElement {
         this(startingEnergy, genome, new Vector2d(0, 0));
     }
 
-    public void move(WorldMap worldMap, NextGeneSelector selector) {
-        //moving
+    public void move(MoveConverter converter, NextGeneSelector selector) {
+        energy--;
+
+        MapDirection newOrientation = orientation.rotated(genome.get(activeGene));
+        Vector2d newPosition = position.add(newOrientation.toMovementVector());
+
+        Pair<Vector2d, MapDirection> finalData = converter.convert(newPosition, newOrientation);
+        this.position = finalData.first();
+        this.orientation = finalData.second();
+
         activeGene = selector.nextGene(genome, activeGene);
     }
 

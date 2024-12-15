@@ -1,12 +1,14 @@
 package model.map;
 
+import model.MapDirection;
 import model.Vector2d;
 import model.elements.animal.Animal;
+import model.util.Pair;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class WorldMap {
+public class WorldMap implements MoveConverter {
     private final List<MapChangeListener> listeners = new ArrayList<>();
     private final Vector2d lowerLeft;
     private final Vector2d upperRight;
@@ -38,7 +40,9 @@ public class WorldMap {
         }
     }
 
-    public Vector2d convert() {
+
+    @Override
+    public Pair<Vector2d, MapDirection> convert(Vector2d position, MapDirection orientation) {
         return null;
     }
 }
