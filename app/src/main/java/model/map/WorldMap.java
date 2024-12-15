@@ -1,61 +1,24 @@
 package model.map;
 
-import model.MapDirection;
 import model.Vector2d;
-import model.elements.WorldElement;
 import model.elements.animal.Animal;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class WorldMap {
-    protected final Map<Vector2d, Animal> animals = new HashMap<>();
-    private final MapVisualizer visualizer = new MapVisualizer(this);
     private final List<MapChangeListener> listeners = new ArrayList<>();
-    private final Boundary boundary;
+    private final Vector2d lowerLeft;
+    private final Vector2d upperRight;
 
-    public WorldMap(Boundary boundary) {
-        this.boundary = boundary;
+    public WorldMap(int width, int height) {
+        this.lowerLeft = new Vector2d(0, 0);
+        this.upperRight = new Vector2d(width, height);
     }
 
 
     public void place(Animal animal) {
-        animals.put(animal.getPosition(), animal);
         notifyMapChanged("place at " + animal.getPosition());
-    }
-
-
-    public boolean canMoveTo(Vector2d position) {
-        return !animals.containsKey(position);
-    }
-
-
-    public boolean isOccupied(Vector2d position) {
-        return animals.containsKey(position);
-    }
-
-
-    public WorldElement objectAt(Vector2d position) {
-        return animals.get(position);
-    }
-
-
-    public void move(Animal animal) {
-        if (!animals.containsValue(animal)) return;
-        Vector2d prevPosition = animal.getPosition();
-        MapDirection prevOrientation = animal.getOrientation();
-        animals.remove(prevPosition);
-        animals.put(animal.getPosition(), animal);
-        if (animal.getPosition() != prevPosition || animal.getOrientation() != prevOrientation)
-            notifyMapChanged("move at %s".formatted(prevPosition));
-    }
-
-
-    @Override
-    public String toString() {
-        return visualizer.draw(boundary.lowerLeft(), boundary.upperRight());
     }
 
 
@@ -68,9 +31,14 @@ public class WorldMap {
         listeners.remove(listener);
     }
 
+
     protected void notifyMapChanged(String message) {
         for (MapChangeListener listener : listeners) {
             listener.mapChanged(this, message);
         }
+    }
+
+    public Vector2d convert() {
+        return null;
     }
 }

@@ -33,7 +33,7 @@ public enum MapDirection {
     }
 
     public MapDirection rotated(int rotationSteps) {
-        if(rotationSteps < 0)
+        if (rotationSteps < 0)
             throw new IllegalArgumentException("Rotation cannot be negative");
         int newOrdinal = (this.ordinal() + rotationSteps) % 8;
         return MapDirection.values()[newOrdinal];
