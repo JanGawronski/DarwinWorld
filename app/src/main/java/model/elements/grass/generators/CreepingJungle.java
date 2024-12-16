@@ -15,6 +15,8 @@ public class CreepingJungle extends AbstractGrassGenerator {
 
     @Override
     protected boolean isPreferred(Vector2d position) {
+        if (grassPositions == null || grassPositions.isEmpty())
+            return false;
         for (MapDirection mapDirection : MapDirection.values()) {
             Vector2d neighbour = position.add(mapDirection.toMovementVector());
             if (grassPositions.contains(neighbour))
