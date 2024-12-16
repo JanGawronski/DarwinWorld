@@ -13,6 +13,12 @@ public abstract class AbstractGrassGenerator implements GrassGenerator {
     private final List<Vector2d> notPreferredPositions;
 
     public AbstractGrassGenerator(int width, int height, Collection<Vector2d> grassPositions, int count) {
+        if (width < 0)
+            throw new IllegalArgumentException("Width must be non-negative");
+        if (height < 0)
+            throw new IllegalArgumentException("Height must be non-negative");
+        if (count < 0)
+            throw new IllegalArgumentException("Count must be non-negative");
         this.count = Math.min(count, width * height - grassPositions.size());
 
         preferredPositions = new java.util.ArrayList<>();
