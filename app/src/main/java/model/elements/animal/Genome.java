@@ -10,12 +10,17 @@ public class Genome {
     public Genome(int[] geneArray) {
         if (geneArray.length == 0)
             throw new IllegalArgumentException("Genome cannot have 0 genes");
+        for (int gene : geneArray)
+            if (gene < 0 || gene > 7)
+                throw new IllegalArgumentException("Genes must be integers from the range [0-7]");
         this.genes = geneArray.clone();
     }
 
     public static Genome breedGenome(Animal left, Animal right, GeneArrayMutator mutator) {
         if (left.getGenome().length() != right.getGenome().length())
             throw new IllegalArgumentException("Genomes have to be the same length");
+        if (left.getEnergy() <= 0 || right.getEnergy() <= 0)
+            throw new IllegalArgumentException("Energy of the parents must be positive");
 
         if (ThreadLocalRandom.current().nextBoolean()) {
             Animal temp = left;

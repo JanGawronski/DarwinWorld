@@ -10,7 +10,7 @@ public class GeneArrayMutator {
     public GeneArrayMutator(int min, int max, int genomeLength) {
         if (min > max)
             throw new IllegalArgumentException("Min cannot be larger than max");
-        if (min < 0 || max >= genomeLength)
+        if (min < 0 || max > genomeLength)
             throw new IllegalArgumentException("Arguments are out of bounds");
         this.min = min;
         this.max = max;

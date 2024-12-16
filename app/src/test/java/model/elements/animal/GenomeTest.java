@@ -11,8 +11,8 @@ class GenomeTest {
         GeneArrayMutator mutator = new GeneArrayMutator(0, 0, 6);
         Genome g1 = new Genome(new int[]{-1, -2, -3, -4, -5, -6});
         Genome g2 = new Genome(new int[]{1, 2, 3, 4, 5, 6});
-        Animal a1 = new Animal(10, g1);
-        Animal a2 = new Animal(5, g2);
+        Animal a1 = new Animal(10, g1, null);
+        Animal a2 = new Animal(5, g2, null);
         Genome r1 = new Genome(new int[]{-1, -2, -3, -4, 5, 6});
         Genome r2 = new Genome(new int[]{1, 2, -3, -4, -5, -6});
 

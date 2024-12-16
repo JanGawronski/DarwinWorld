@@ -5,7 +5,6 @@ import model.Vector2d;
 import model.elements.WorldElement;
 import model.elements.animal.geneselectors.NextGeneSelector;
 import model.map.MoveConverter;
-import model.map.WorldMap;
 import model.util.Pair;
 
 import java.util.concurrent.ThreadLocalRandom;
@@ -31,8 +30,18 @@ public class Animal implements WorldElement {
         this(startingEnergy, genome, ThreadLocalRandom.current().nextInt(0, genome.length()), MapDirection.randomDirection(), position);
     }
 
-    public Animal(int startingEnergy, Genome genome) {
-        this(startingEnergy, genome, new Vector2d(0, 0));
+
+    public static Animal breed(Animal father, Animal mother, int energyTransferred, GeneArrayMutator mutator) {
+        if (father.position != mother.position)
+            throw new IllegalArgumentException("Parents must have the same position");
+        if (father.energy < energyTransferred || mother.energy < energyTransferred)
+            throw new IllegalArgumentException("Parents must have enough energy to give up");
+
+
+        Genome childGenome = Genome.breedGenome(father, mother, mutator);
+        father.energy -= energyTransferred;
+        mother.energy -= energyTransferred;
+        return new Animal(2 * energyTransferred, childGenome, father.position);
     }
 
     public void move(MoveConverter converter, NextGeneSelector selector) {
@@ -41,9 +50,9 @@ public class Animal implements WorldElement {
         MapDirection newOrientation = orientation.rotated(genome.get(activeGene));
         Vector2d newPosition = position.add(newOrientation.toMovementVector());
 
-        Pair<Vector2d, MapDirection> finalData = converter.convert(newPosition, newOrientation);
-        this.position = finalData.first();
-        this.orientation = finalData.second();
+        Pair<Vector2d, MapDirection> newMove = converter.convert(newPosition, newOrientation);
+        this.position = newMove.first();
+        this.orientation = newMove.second();
 
         activeGene = selector.nextGene(genome, activeGene);
     }

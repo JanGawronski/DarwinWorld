@@ -43,6 +43,14 @@ public class WorldMap implements MoveConverter {
 
     @Override
     public Pair<Vector2d, MapDirection> convert(Vector2d position, MapDirection orientation) {
-        return null;
+        if (position.y() < lowerLeft.y() || position.y() > upperRight.y()) {
+            MapDirection newOrientation = orientation.rotated(4);
+            return new Pair<>(position.add(newOrientation.toMovementVector()), newOrientation);
+        }
+        if (position.x() < lowerLeft.x())
+            return new Pair<>(new Vector2d(upperRight.x(), position.y()), orientation);
+        if (position.x() > upperRight.x())
+            return new Pair<>(new Vector2d(lowerLeft.x(), position.x()), orientation);
+        return new Pair<>(position, orientation);
     }
 }
