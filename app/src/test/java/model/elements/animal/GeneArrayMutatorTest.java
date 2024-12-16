@@ -2,12 +2,13 @@ package model.elements.animal;
 
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class GeneArrayMutatorTest {
 
     @Test
-    void illegalCases() {
+    void illegalArguments() {
         assertThrows(IllegalArgumentException.class, () -> new GeneArrayMutator(5, 3, 10));
         assertThrows(IllegalArgumentException.class, () -> new GeneArrayMutator(-1, 3, 10));
         assertThrows(IllegalArgumentException.class, () -> new GeneArrayMutator(3, 20, 10));

@@ -1,9 +1,9 @@
 package model.map;
 
 import model.MapDirection;
+import model.Pair;
 import model.Vector2d;
 import model.elements.animal.Animal;
-import model.util.Pair;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -16,27 +16,27 @@ public class Genome {
         this.genes = geneArray.clone();
     }
 
-    public static Genome breedGenome(Animal left, Animal right, GeneArrayMutator mutator) {
-        if (left.getGenome().length() != right.getGenome().length())
+    public static Genome breedGenome(Genome left, int leftEnergy, Genome right, int rightEnergy, GeneArrayMutator mutator) {
+        if (left.length() != right.length())
             throw new IllegalArgumentException("Genomes have to be the same length");
-        if (left.getEnergy() <= 0 || right.getEnergy() <= 0)
+        if (leftEnergy <= 0 || rightEnergy <= 0)
             throw new IllegalArgumentException("Energy of the parents must be positive");
 
         if (ThreadLocalRandom.current().nextBoolean()) {
-            Animal temp = left;
+            Genome temp = left;
             left = right;
             right = temp;
         }
 
-        int n = left.getGenome().length();
-        int divide = n * left.getEnergy() / (left.getEnergy() + right.getEnergy());
+        int n = left.length();
+        int divide = n * leftEnergy / (leftEnergy + rightEnergy);
 
         int[] geneArray = new int[n];
         for (int i = 0; i < divide; i++) {
-            geneArray[i] = left.getGenome().get(i);
+            geneArray[i] = left.get(i);
         }
         for (int i = divide; i < n; i++)
-            geneArray[i] = right.getGenome().get(i);
+            geneArray[i] = right.get(i);
 
         mutator.mutate(geneArray);
         return new Genome(geneArray);

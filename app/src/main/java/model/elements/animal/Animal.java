@@ -1,24 +1,26 @@
 package model.elements.animal;
 
+import model.AnimalConfigData;
 import model.MapDirection;
+import model.Pair;
 import model.Vector2d;
 import model.elements.WorldElement;
-import model.elements.animal.geneselectors.NextGeneSelector;
 import model.map.MoveConverter;
-import model.util.Pair;
 
 import java.util.concurrent.ThreadLocalRandom;
 
 public class Animal implements WorldElement {
+    private final AnimalConfigData config;
     private final Genome genome;
+    private int activeGene;
     private int energy;
     private MapDirection orientation;
     private Vector2d position;
-    private int activeGene;
 
-    public Animal(int startingEnergy, Genome genome, int startingGene, MapDirection orientation, Vector2d position) {
+    public Animal(AnimalConfigData config, int startingEnergy, Genome genome, int startingGene, MapDirection orientation, Vector2d position) {
         if (startingGene >= genome.length() || startingGene < 0)
             throw new IllegalArgumentException("Starting gene is out of bounds");
+        this.config = config;
         this.energy = startingEnergy;
         this.genome = genome;
         this.activeGene = startingGene;
@@ -26,25 +28,28 @@ public class Animal implements WorldElement {
         this.position = position;
     }
 
-    public Animal(int startingEnergy, Genome genome, Vector2d position) {
-        this(startingEnergy, genome, ThreadLocalRandom.current().nextInt(0, genome.length()), MapDirection.randomDirection(), position);
+    public Animal(AnimalConfigData config, int startingEnergy, Genome genome, Vector2d position) {
+        this(config, startingEnergy, genome, ThreadLocalRandom.current().nextInt(genome.length()), MapDirection.randomDirection(), position);
     }
 
-
-    public static Animal breed(Animal father, Animal mother, int energyTransferred, GeneArrayMutator mutator) {
+    public static Animal breed(Animal father, Animal mother) {
         if (father.position != mother.position)
             throw new IllegalArgumentException("Parents must have the same position");
-        if (father.energy < energyTransferred || mother.energy < energyTransferred)
-            throw new IllegalArgumentException("Parents must have enough energy to give up");
+        if (father.config != mother.config)
+            throw new IllegalArgumentException("Parents must have the same configuration");
 
 
-        Genome childGenome = Genome.breedGenome(father, mother, mutator);
-        father.energy -= energyTransferred;
-        mother.energy -= energyTransferred;
-        return new Animal(2 * energyTransferred, childGenome, father.position);
+        Genome childGenome = Genome.breedGenome(mother.genome, mother.energy, father.genome, father.energy, mother.config.mutator());
+        father.energy -= father.config.birthEnergy();
+        mother.energy -= mother.config.birthEnergy();
+        return new Animal(mother.config, father.config.birthEnergy() + mother.config.birthEnergy(), childGenome, father.position);
     }
 
-    public void move(MoveConverter converter, NextGeneSelector selector) {
+    public void feed() {
+        energy += config.feedEnergy();
+    }
+
+    public void move(MoveConverter converter) {
         energy--;
 
         MapDirection newOrientation = orientation.rotated(genome.get(activeGene));
@@ -54,7 +59,7 @@ public class Animal implements WorldElement {
         this.position = newMove.first();
         this.orientation = newMove.second();
 
-        activeGene = selector.nextGene(genome, activeGene);
+        activeGene = this.config.selector().nextGene(genome, activeGene);
     }
 
     @Override
@@ -81,6 +86,6 @@ public class Animal implements WorldElement {
 
     @Override
     public String toString() {
-        return this.orientation.toString();
+        return orientation.toString();
     }
 }
