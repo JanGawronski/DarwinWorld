@@ -59,7 +59,7 @@ public class Animal implements WorldElement {
         this.position = newMove.first();
         this.orientation = newMove.second();
 
-        activeGene = this.config.selector().nextGene(genome, activeGene);
+        activeGene = this.config.selector().nextGene(activeGene);
     }
 
     @Override

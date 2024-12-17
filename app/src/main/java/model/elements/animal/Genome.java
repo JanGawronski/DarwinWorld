@@ -42,6 +42,13 @@ public class Genome {
         return new Genome(geneArray);
     }
 
+    public static Genome randomGenome(int length) {
+        int[] array = new int[length];
+        for (int i = 0; i < length; i++)
+            array[i] = ThreadLocalRandom.current().nextInt(8);
+        return new Genome(array);
+    }
+
     @Override
     public String toString() {
         return "Genome " + Arrays.toString(genes);

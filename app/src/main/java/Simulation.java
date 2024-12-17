@@ -1,15 +1,16 @@
-import model.elements.animal.GeneArrayMutator;
-import model.elements.animal.geneselectors.NextGeneSelector;
+import model.AnimalConfigData;
 import model.map.WorldMap;
 
 public class Simulation {
-    private final NextGeneSelector selector;
     private final WorldMap map;
-    private final GeneArrayMutator mutator;
+    private final AnimalConfigData animalConfig;
 
-    public Simulation(NextGeneSelector selector, WorldMap map, GeneArrayMutator mutator) {
-        this.selector = selector;
+    public Simulation(WorldMap map, AnimalConfigData animalConfig) {
         this.map = map;
-        this.mutator = mutator;
+        this.animalConfig = animalConfig;
+    }
+
+    public void setup() {
+
     }
 }

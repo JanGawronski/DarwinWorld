@@ -1,19 +1,21 @@
 package model.elements.animal.geneselectors;
 
-import model.elements.animal.Genome;
-
 import java.util.concurrent.ThreadLocalRandom;
 
-public class BitOfMadness implements NextGeneSelector {
+public class BitOfMadness extends NextGeneSelector {
+    public BitOfMadness(int genomeLength) {
+        super(genomeLength);
+    }
+
     @Override
-    public int nextGene(Genome genome, int currentGene) {
-        if (currentGene >= genome.length() || currentGene < 0)
+    public int nextGene(int currentGene) {
+        if (currentGene >= genomeLength || currentGene < 0)
             throw new IllegalArgumentException("Previous gene was out of bounds");
 
         if (ThreadLocalRandom.current().nextInt(0, 5) != 0)
-            return (currentGene + 1) % genome.length();
+            return (currentGene + 1) % genomeLength;
 
-        int nextGene = ThreadLocalRandom.current().nextInt(0, genome.length() - 1);
+        int nextGene = ThreadLocalRandom.current().nextInt(0, genomeLength - 1);
         if (nextGene >= currentGene)
             nextGene++;
         return nextGene;

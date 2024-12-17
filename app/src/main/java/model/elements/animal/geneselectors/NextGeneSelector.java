@@ -1,8 +1,13 @@
 package model.elements.animal.geneselectors;
 
-import model.elements.animal.Genome;
+public abstract class NextGeneSelector {
+    protected final int genomeLength;
 
-@FunctionalInterface
-public interface NextGeneSelector {
-    int nextGene(Genome genome, int currentGene);
+    public NextGeneSelector(int genomeLength) {
+        if (genomeLength <= 0)
+            throw new IllegalArgumentException("Genome length must be positive");
+        this.genomeLength = genomeLength;
+    }
+
+    public abstract int nextGene(int currentGene);
 }
