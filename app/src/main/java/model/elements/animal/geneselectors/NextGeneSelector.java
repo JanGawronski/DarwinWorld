@@ -9,5 +9,9 @@ public abstract class NextGeneSelector {
         this.genomeLength = genomeLength;
     }
 
+    public int getGenomeLength() {
+        return genomeLength;
+    }
+
     public abstract int nextGene(int currentGene);
 }

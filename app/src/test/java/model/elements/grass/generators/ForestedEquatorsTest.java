@@ -4,83 +4,69 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Set;
 
 import model.Vector2d;
+import model.elements.grass.Grass;
+import model.map.WorldMap;
 
 public class ForestedEquatorsTest {
     @Test
-    void IllegalArguments() {
-        assertThrows(IllegalArgumentException.class, () -> new ForestedEquators(-1, 10, Set.of(), 5));
-        assertThrows(IllegalArgumentException.class, () -> new ForestedEquators(10, -1, Set.of(), 5));
-        assertThrows(IllegalArgumentException.class, () -> new ForestedEquators(10, 10, Set.of(), -1));
+    void illegalArguments() {
+        WorldMap map = new WorldMap(10, 10);
+        ForestedEquators forestedEquators = new ForestedEquators(map);
+
+        assertThrows(IllegalArgumentException.class, () -> forestedEquators.generateGrass(-1));
+        assertThrows(IllegalArgumentException.class, () -> forestedEquators.generateGrass(1000));
     }
 
     @Test
     void count() {
-        ForestedEquators forestedEquators = new ForestedEquators(10, 10, Set.of(), 5);
-        int count = 0;
-        for (Vector2d position : forestedEquators) {
-            count++;
-        }
-        assertEquals(5, count);
+        WorldMap map = new WorldMap(10, 10);
+        ForestedEquators forestedEquators = new ForestedEquators(map);
+        int count = 5;
+        Set<Grass> grasses = forestedEquators.generateGrass(count);
+        assertEquals(count, grasses.size());
     }
 
     @Test
-    void countTooMuchToGenerate() {
-        ForestedEquators forestedEquators = new ForestedEquators(5, 5, Set.of(), 100);
-        int count = 0;
-        for (Vector2d position : forestedEquators) {
-            count++;
+    void ifDoesntGenerateAlreadyGenerated() {
+        WorldMap map = new WorldMap(2, 2);
+        map.place(new Grass(new Vector2d(0, 0)));
+        map.place(new Grass(new Vector2d(0, 1)));
+        map.place(new Grass(new Vector2d(1, 0)));
+        ForestedEquators forestedEquators = new ForestedEquators(map);
+        Vector2d testPosition = new Vector2d(1, 1);
+
+        for (int i = 0; i < 10; i++) {
+            Set<Grass> grasses = forestedEquators.generateGrass(1);
+            assertEquals(testPosition, grasses.iterator().next().getPosition());
         }
-        assertEquals(25, count);
     }
 
-    @Test
-    void countIfFilled() {
-        Set<Vector2d> grassPositions = Set.of(new Vector2d(0, 0), new Vector2d(0, 1), new Vector2d(1, 0), new Vector2d(1, 1));
-
-        ForestedEquators forestedEquators = new ForestedEquators(3, 3, grassPositions, 10);
-        int count = 0;
-        for (Vector2d position : forestedEquators) {
-            count++;
-        }
-        assertEquals(5, count);
-        
-    }
-
-    @Test
-    void countIfFull() {
-        Set<Vector2d> grassPositions = Set.of(new Vector2d(0, 0), new Vector2d(0, 1), new Vector2d(1, 0), new Vector2d(1, 1));
-
-        ForestedEquators forestedEquators = new ForestedEquators(2, 2, grassPositions, 10);
-        int count = 0;
-        for (Vector2d position : forestedEquators) {
-            count++;
-        }
-        assertEquals(0, count);
-        
-    }
 
     @Test
     void unique() {
-        ForestedEquators forestedEquators = new ForestedEquators(5, 5, Set.of(), 25);
-        Vector2d[] positions = new Vector2d[25];
-        int i = 0;
-        for (Vector2d position : forestedEquators)
-            positions[i++] = position;
-        for (int j = 0; j < 25; j++)
-            for (int k = j + 1; k < 25; k++)
-                assertNotEquals(positions[j], positions[k]);
-        
+        WorldMap map = new WorldMap(10, 10);
+        ForestedEquators forestedEquators = new ForestedEquators(map);
+        Grass grasses[] = forestedEquators.generateGrass(100).toArray(Grass[]::new);
+        for (int i = 0; i < 100; i++)
+            for (int j = i + 1; j < 100; j++)
+                assertNotEquals(grasses[i].getPosition(), grasses[j].getPosition());
     }
 
     @Test
     void inBounds() {
-        ForestedEquators forestedEquators = new ForestedEquators(5, 5, Set.of(), 25);
-        for (Vector2d position : forestedEquators)
-            assert(position.precedes(new Vector2d(4, 4)) && position.follows(new Vector2d(0, 0)));
+        WorldMap map = new WorldMap(10, 10);
+        ForestedEquators forestedEquators = new ForestedEquators(map);
+        Set<Grass> grasses = forestedEquators.generateGrass(100);
+        Vector2d lowerLeft = new Vector2d(0, 0);
+        Vector2d upperRight = new Vector2d(9, 9);
+        for (Grass grass : grasses) {
+            assertTrue(grass.getPosition().precedes(upperRight) && grass.getPosition().follows(lowerLeft));
+        }
         
     }
 }

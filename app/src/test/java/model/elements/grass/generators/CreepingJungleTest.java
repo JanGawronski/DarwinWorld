@@ -3,84 +3,71 @@ package model.elements.grass.generators;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Set;
 
 import org.junit.jupiter.api.Test;
 
 import model.Vector2d;
+import model.elements.grass.Grass;
+import model.map.WorldMap;
 
 public class CreepingJungleTest {
-     @Test
-    void IllegalArguments() {
-        assertThrows(IllegalArgumentException.class, () -> new CreepingJungle(-1, 10, Set.of(), 5));
-        assertThrows(IllegalArgumentException.class, () -> new CreepingJungle(10, -1, Set.of(), 5));
-        assertThrows(IllegalArgumentException.class, () -> new CreepingJungle(10, 10, Set.of(), -1));
+    @Test
+    void illegalArguments() {
+        WorldMap map = new WorldMap(10, 10);
+        CreepingJungle creepingJungle = new CreepingJungle(map);
+
+        assertThrows(IllegalArgumentException.class, () -> creepingJungle.generateGrass(-1));
+        assertThrows(IllegalArgumentException.class, () -> creepingJungle.generateGrass(1000));
     }
 
     @Test
     void count() {
-        CreepingJungle creepingJungle = new CreepingJungle(10, 10, Set.of(), 5);
-        int count = 0;
-        for (Vector2d position : creepingJungle) {
-            count++;
-        }
-        assertEquals(5, count);
+        WorldMap map = new WorldMap(10, 10);
+        CreepingJungle creepingJungle = new CreepingJungle(map);
+        int count = 5;
+        Set<Grass> grasses = creepingJungle.generateGrass(count);
+        assertEquals(count, grasses.size());
     }
 
     @Test
-    void countTooMuchToGenerate() {
-        CreepingJungle creepingJungle = new CreepingJungle(5, 5, Set.of(), 100);
-        int count = 0;
-        for (Vector2d position : creepingJungle) {
-            count++;
+    void doesntGenerateAlreadyGenerated() {
+        WorldMap map = new WorldMap(2, 2);
+        map.place(new Grass(new Vector2d(0, 0)));
+        map.place(new Grass(new Vector2d(0, 1)));
+        map.place(new Grass(new Vector2d(1, 0)));
+        CreepingJungle creepingJungle = new CreepingJungle(map);
+        Vector2d testPosition = new Vector2d(1, 1);
+
+        for (int i = 0; i < 10; i++) {
+            Set<Grass> grasses = creepingJungle.generateGrass(1);
+            assertEquals(testPosition, grasses.iterator().next().getPosition());
         }
-        assertEquals(25, count);
     }
 
-    @Test
-    void countIfFilled() {
-        Set<Vector2d> grassPositions = Set.of(new Vector2d(0, 0), new Vector2d(0, 1), new Vector2d(1, 0), new Vector2d(1, 1));
-
-        CreepingJungle creepingJungle = new CreepingJungle(3, 3, grassPositions, 10);
-        int count = 0;
-        for (Vector2d position : creepingJungle) {
-            count++;
-        }
-        assertEquals(5, count);
-        
-    }
-
-    @Test
-    void countIfFull() {
-        Set<Vector2d> grassPositions = Set.of(new Vector2d(0, 0), new Vector2d(0, 1), new Vector2d(1, 0), new Vector2d(1, 1));
-
-        CreepingJungle creepingJungle = new CreepingJungle(2, 2, grassPositions, 10);
-        int count = 0;
-        for (Vector2d position : creepingJungle) {
-            count++;
-        }
-        assertEquals(0, count);   
-    }
 
     @Test
     void unique() {
-        CreepingJungle creepingJungle = new CreepingJungle(5, 5, Set.of(), 25);
-        Vector2d[] positions = new Vector2d[25];
-        int i = 0;
-        for (Vector2d position : creepingJungle)
-            positions[i++] = position;
-        for (int j = 0; j < 25; j++)
-            for (int k = j + 1; k < 25; k++)
-                assertNotEquals(positions[j], positions[k]);
-        
+        WorldMap map = new WorldMap(10, 10);
+        CreepingJungle creepingJungle = new CreepingJungle(map);
+        Grass grasses[] = creepingJungle.generateGrass(100).toArray(Grass[]::new);
+        for (int i = 0; i < 100; i++)
+            for (int j = i + 1; j < 100; j++)
+                assertNotEquals(grasses[i].getPosition(), grasses[j].getPosition());
     }
 
     @Test
     void inBounds() {
-        CreepingJungle creepingJungle = new CreepingJungle(5, 5, Set.of(), 25);
-        for (Vector2d position : creepingJungle)
-            assert(position.precedes(new Vector2d(4, 4)) && position.follows(new Vector2d(0, 0)));
+        WorldMap map = new WorldMap(10, 10);
+        CreepingJungle creepingJungle = new CreepingJungle(map);
+        Set<Grass> grasses = creepingJungle.generateGrass(100);
+        Vector2d lowerLeft = new Vector2d(0, 0);
+        Vector2d upperRight = new Vector2d(9, 9);
+        for (Grass grass : grasses) {
+            assertTrue(grass.getPosition().precedes(upperRight) && grass.getPosition().follows(lowerLeft));
+        }
         
     }
 }

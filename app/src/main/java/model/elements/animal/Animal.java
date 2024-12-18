@@ -8,6 +8,12 @@ import model.elements.WorldElement;
 import model.map.MoveConverter;
 
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.stream.Collectors;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 public class Animal implements WorldElement {
     private final AnimalConfigData config;
@@ -20,9 +26,10 @@ public class Animal implements WorldElement {
     private int grassEaten = 0;
     private int childCount = 0;
     private int descendantCount = 0;
-    private int liveSpan = 0;
-    private Integer deathDay = null;
+    private Integer deathDate = null;
     private Integer latestBreedId = null;
+    private Set<Animal> offspring = new HashSet<>();
+    private int liveSpan = 0;
 
     public Animal(AnimalConfigData config, int startingEnergy, Genome genome, int startingGene, MapDirection orientation, Vector2d position, Pair<Animal, Animal> parents) {
         if (startingGene >= genome.length() || startingGene < 0)
@@ -38,6 +45,10 @@ public class Animal implements WorldElement {
 
     public Animal(AnimalConfigData config, int startingEnergy, Genome genome, Vector2d position, Pair<Animal, Animal> parents) {
         this(config, startingEnergy, genome, ThreadLocalRandom.current().nextInt(genome.length()), MapDirection.randomDirection(), position, parents);
+    }
+
+    public Animal(AnimalConfigData config, int startingEnergy, Vector2d position) {
+        this(config, startingEnergy, Genome.randomGenome(config.selector().getGenomeLength()), ThreadLocalRandom.current().nextInt(config.selector().getGenomeLength()), MapDirection.randomDirection(), position , null);
     }
 
     public static Animal breed(Animal father, Animal mother, int breedId) {
@@ -75,6 +86,15 @@ public class Animal implements WorldElement {
         activeGene = this.config.selector().nextGene(activeGene);
     }
 
+    public static List<Animal> sort(Collection<Animal> animals) {
+        return animals.stream()
+                .sorted(Comparator.comparingInt((Animal animal) -> animal.energy)
+                        .thenComparingInt(animal -> animal.liveSpan)
+                        .thenComparingInt(animal -> animal.offspring.size())
+                        .thenComparingInt(animal -> ThreadLocalRandom.current().nextInt()))
+                .collect(Collectors.toList());
+    }
+
     @Override
     public boolean isAt(Vector2d otherPosition) {
         return this.position.equals(otherPosition);
@@ -87,6 +107,14 @@ public class Animal implements WorldElement {
     @Override
     public Vector2d getPosition() {
         return position;
+    }
+
+    public int getEnergy() {
+        return energy;
+    }
+
+    public Genome getGenome() {
+        return genome;
     }
 
     @Override
@@ -105,15 +133,19 @@ public class Animal implements WorldElement {
         parents.second().addDescendant(breedNumber);
     }
 
-    public void setDeathDay(int deathDay) {
-        if(this.deathDay != null)
+    public boolean isAlive() {
+        return deathDate == null;
+    }
+
+    public void setDeathDay(int deathDate) {
+        if(!isAlive())
             throw new AlreadyDeadException("Animal is already dead");
-        if(deathDay < 0)
+        if(deathDate < 0)
             throw new IllegalArgumentException("Time of death cannot be negative");
-        this.deathDay = deathDay;
+        this.deathDate = deathDate;
     }
 
     public AnimalStats getStats() {
-        return new AnimalStats(genome, activeGene, energy, grassEaten, childCount, descendantCount, liveSpan, deathDay);
+        return new AnimalStats(genome, activeGene, energy, grassEaten, childCount, descendantCount, liveSpan, deathDate);
     }
 }

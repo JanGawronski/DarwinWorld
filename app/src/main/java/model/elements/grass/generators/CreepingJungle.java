@@ -1,22 +1,19 @@
 package model.elements.grass.generators;
 
-import java.util.Collection;
+import java.util.Set;
 
 import model.Vector2d;
 import model.MapDirection;
+import model.map.WorldMap;
 
 public class CreepingJungle extends AbstractGrassGenerator {
-    private final Collection<Vector2d> grassPositions;
-
-    public CreepingJungle(int width, int height, Collection<Vector2d> grassPositions, int count) {
-        super(width, height, grassPositions, count);
-        this.grassPositions = grassPositions;
+    public CreepingJungle(WorldMap map) {
+        super(map);
     }
 
     @Override
     protected boolean isPreferred(Vector2d position) {
-        if (grassPositions == null || grassPositions.isEmpty())
-            return false;
+        Set<Vector2d> grassPositions = map.getGrassesPositions();
         for (MapDirection mapDirection : MapDirection.values()) {
             Vector2d neighbour = position.add(mapDirection.toMovementVector());
             if (grassPositions.contains(neighbour))

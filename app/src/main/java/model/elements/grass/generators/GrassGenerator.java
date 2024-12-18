@@ -1,6 +1,9 @@
 package model.elements.grass.generators;
 
-import model.Vector2d;
+import java.util.Set;
 
-public interface GrassGenerator extends Iterable<Vector2d> {
+import model.elements.grass.Grass;
+
+public interface GrassGenerator {
+    Set<Grass> generateGrass(int count);
 }

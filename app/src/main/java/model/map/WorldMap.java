@@ -4,11 +4,18 @@ import model.MapDirection;
 import model.Pair;
 import model.Vector2d;
 import model.elements.animal.Animal;
+import model.elements.grass.Grass;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class WorldMap implements MoveConverter {
+    private final HashMap<Vector2d, HashSet<Animal>> animals = new HashMap<>();
+    private final HashMap<Vector2d, Grass> grasses = new HashMap<>();
     private final List<MapChangeListener> listeners = new ArrayList<>();
     private final Vector2d lowerLeft;
     private final Vector2d upperRight;
@@ -18,11 +25,37 @@ public class WorldMap implements MoveConverter {
         this.upperRight = new Vector2d(width, height);
     }
 
-
     public void place(Animal animal) {
-        notifyMapChanged("place at " + animal.getPosition());
+        Vector2d position = animal.getPosition();
+        if (!animals.containsKey(position))
+            animals.put(position, new HashSet<Animal>());
+        animals.get(position).add(animal);
+        notifyMapChanged("Animal placed at " + animal.getPosition());
     }
 
+    public void remove(Animal animal) {
+        Vector2d position = animal.getPosition();
+        if (!animals.containsKey(position) || !animals.get(position).contains(animal))
+            throw new IllegalArgumentException("This animal is not present at " + position);
+        animals.get(position).remove(animal);
+        notifyMapChanged("Animal removed from " + animal.getPosition());
+    }
+
+    public void place(Grass grass) {
+        Vector2d position = grass.getPosition();
+        if (grasses.containsKey(position))
+            throw new IllegalArgumentException("Grass is already present at " + position);
+        grasses.put(position, grass);
+        notifyMapChanged("Grass placed at " + grass.getPosition());
+    }
+
+    public void remove(Grass grass) {
+        Vector2d position = grass.getPosition();
+        if (!grasses.containsKey(position))
+            throw new IllegalArgumentException("There is no grass at " + position);
+        grasses.remove(position);
+        notifyMapChanged("Grass removed from " + grass.getPosition());
+    }
 
     public void addListener(MapChangeListener listener) {
         listeners.add(listener);
@@ -53,4 +86,31 @@ public class WorldMap implements MoveConverter {
             return new Pair<>(new Vector2d(lowerLeft.x(), position.x()), orientation);
         return new Pair<>(position, orientation);
     }
+ 
+    public HashMap<Vector2d, HashSet<Animal>> getAnimalsAtPositionsWithTwoOrMoreAnimals() {
+        return animals.entrySet().stream()
+            .filter(entry -> entry.getValue().size() >= 2)
+            .collect(HashMap::new, (m, e) -> m.put(e.getKey(), e.getValue()), HashMap::putAll);
+    }
+
+    public Set<Animal> getAnimalsAt(Vector2d position) {
+        return Collections.unmodifiableSet(animals.getOrDefault(position, new HashSet<Animal>()));
+    }
+
+    public Set<Grass> getGrasses() {
+        return Collections.unmodifiableSet(new HashSet<Grass>(grasses.values()));
+    }
+
+    public Set<Vector2d> getGrassesPositions() {
+        return Collections.unmodifiableSet(grasses.keySet());
+    }
+
+    public int getWidth() {
+        return upperRight.x();
+    }
+
+    public int getHeight() {
+        return upperRight.y();
+    }
+
 }
