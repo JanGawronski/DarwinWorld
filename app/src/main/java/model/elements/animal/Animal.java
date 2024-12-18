@@ -28,7 +28,6 @@ public class Animal implements WorldElement {
     private int descendantCount = 0;
     private Integer deathDate = null;
     private Integer latestBreedId = null;
-    private Set<Animal> offspring = new HashSet<>();
     private int liveSpan = 0;
 
     public Animal(AnimalConfigData config, int startingEnergy, Genome genome, int startingGene, MapDirection orientation, Vector2d position, Pair<Animal, Animal> parents) {
@@ -90,9 +89,9 @@ public class Animal implements WorldElement {
         return animals.stream()
                 .sorted(Comparator.comparingInt((Animal animal) -> animal.energy)
                         .thenComparingInt(animal -> animal.liveSpan)
-                        .thenComparingInt(animal -> animal.offspring.size())
+                        .thenComparingInt(animal -> animal.childCount)
                         .thenComparingInt(animal -> ThreadLocalRandom.current().nextInt()))
-                .collect(Collectors.toList());
+                .collect(Collectors.toList()).reversed();
     }
 
     @Override
