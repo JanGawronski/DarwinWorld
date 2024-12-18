@@ -123,9 +123,9 @@ public class Animal implements WorldElement {
     }
 
     private void addDescendant(int breedNumber) {
-        if(breedNumber == this.latestBreedId)
+        if(latestBreedId != null && breedNumber == latestBreedId)
             return;
-        this.latestBreedId = breedNumber;
+        latestBreedId = breedNumber;
         descendantCount++;
         if(parents == null)
             return;
