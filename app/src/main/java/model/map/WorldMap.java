@@ -12,6 +12,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.Map;
 
 public class WorldMap implements MoveConverter {
     private final HashMap<Vector2d, HashSet<Animal>> animals = new HashMap<>();
@@ -87,10 +88,8 @@ public class WorldMap implements MoveConverter {
         return new Pair<>(position, orientation);
     }
  
-    public HashMap<Vector2d, HashSet<Animal>> getAnimalsAtPositionsWithTwoOrMoreAnimals() {
-        return animals.entrySet().stream()
-            .filter(entry -> entry.getValue().size() >= 2)
-            .collect(HashMap::new, (m, e) -> m.put(e.getKey(), e.getValue()), HashMap::putAll);
+    public Map<Vector2d, HashSet<Animal>> getAnimalsMap() {
+        return Collections.unmodifiableMap(animals);
     }
 
     public Set<Animal> getAnimalsAt(Vector2d position) {

@@ -3,6 +3,7 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.Map;
 
 import model.map.WorldMap;
 import model.AnimalConfigData;
@@ -20,7 +21,8 @@ public class Simulation implements Runnable {
     private final int grassGrowthRate;
     private int day = 0;
 
-    public Simulation(WorldMap map, AnimalConfigData animalConfigData, GrassGenerator grassGenerator, int initialGrassCount, int grassGrowthRate, int initialAnimalCount, int initialEnergy) {
+    public Simulation(WorldMap map, AnimalConfigData animalConfigData, GrassGenerator grassGenerator,
+            int initialGrassCount, int grassGrowthRate, int initialAnimalCount, int initialEnergy) {
         this.map = map;
         this.grassGenerator = grassGenerator;
         this.grassGrowthRate = grassGrowthRate;
@@ -32,9 +34,10 @@ public class Simulation implements Runnable {
         Set<Grass> grasses = grassGenerator.generateGrass(initialGrassCount);
         for (Grass grass : grasses)
             map.place(grass);
-        
+
         for (int i = 0; i < initialAnimalCount; i++) {
-            Vector2d position = new Vector2d(ThreadLocalRandom.current().nextInt(map.getWidth()), ThreadLocalRandom.current().nextInt(map.getHeight()));
+            Vector2d position = new Vector2d(ThreadLocalRandom.current().nextInt(map.getWidth()),
+                    ThreadLocalRandom.current().nextInt(map.getHeight()));
             Animal animal = new Animal(animalConfigData, initialEnergy, position);
             animals.add(animal);
             map.place(animal);
@@ -84,16 +87,19 @@ public class Simulation implements Runnable {
     }
 
     private void breedAnimals() {
-        HashMap<Vector2d, HashSet<Animal>> animalsByPosition = map.getAnimalsAtPositionsWithTwoOrMoreAnimals();
+        Map<Vector2d, HashSet<Animal>> animalsByPosition = map.getAnimalsMap();
         for (HashSet<Animal> animals : animalsByPosition.values()) {
-            List<Animal> sortedAnimals = Animal.sort(animals);
-            if (sortedAnimals.get(1).getEnergy() >= animalConfig.saturationEnergy())
-                Animal.breed(sortedAnimals.get(0), sortedAnimals.get(1), animals.size() + deadAnimals.size());
+            if (animals.size() >= 2) {
+                List<Animal> sortedAnimals = Animal.sort(animals);
+                if (sortedAnimals.get(1).getEnergy() >= animalConfig.saturationEnergy())
+                    Animal.breed(sortedAnimals.get(0), sortedAnimals.get(1), animals.size() + deadAnimals.size());
+            }
         }
     }
 
     private void growGrass() {
-        Set<Grass> grasses = grassGenerator.generateGrass(Math.min(grassGrowthRate, map.getHeight() * map.getWidth() - map.getGrasses().size()));
+        Set<Grass> grasses = grassGenerator
+                .generateGrass(Math.min(grassGrowthRate, map.getHeight() * map.getWidth() - map.getGrasses().size()));
         for (Grass grass : grasses)
             map.place(grass);
     }
