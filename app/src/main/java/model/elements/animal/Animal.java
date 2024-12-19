@@ -10,6 +10,7 @@ import model.map.MoveConverter;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 
@@ -29,6 +30,8 @@ public class Animal implements WorldElement {
     private int liveSpan = 0;
 
     public Animal(AnimalConfigData config, int startingEnergy, Genome genome, int startingGene, MapDirection orientation, Vector2d position, Pair<Animal, Animal> parents) {
+        if (startingEnergy < 0)
+            throw new IllegalArgumentException("Energy cannot be negative");
         if (startingGene >= genome.length() || startingGene < 0)
             throw new IndexOutOfBoundsException("Starting gene is out of bounds");
         this.config = config;
@@ -49,19 +52,24 @@ public class Animal implements WorldElement {
     }
 
     public static Animal breed(Animal father, Animal mother, int breedId) {
-        if (father.position != mother.position)
-            throw new IllegalArgumentException("Parents must have the same position");
+        if (father == mother)
+            throw new IllegalArgumentException("Parents be different Animals");
         if (father.config != mother.config)
             throw new IllegalArgumentException("Parents must have the same configuration");
+        AnimalConfigData setup = mother.config;
+        if (father.position != mother.position)
+            throw new IllegalArgumentException("Parents must have the same position");
+        if (father.energy < setup.birthEnergy() || mother.energy < setup.birthEnergy())
+            throw new IllegalArgumentException("Parent's must have enough energy to give up");
 
-        Genome childGenome = Genome.breedGenome(mother.genome, mother.energy, father.genome, father.energy, mother.config.mutator());
+        Genome childGenome = Genome.breedGenome(mother.genome, mother.energy, father.genome, father.energy, setup.mutator());
         father.childCount++;
         mother.childCount++;
         mother.addDescendant(breedId);
         father.addDescendant(breedId);
-        father.energy -= father.config.birthEnergy();
-        mother.energy -= mother.config.birthEnergy();
-        return new Animal(mother.config, father.config.birthEnergy() + mother.config.birthEnergy(), childGenome, father.position, new Pair<>(mother, father));
+        father.energy -= setup.birthEnergy();
+        mother.energy -= setup.birthEnergy();
+        return new Animal(setup, 2 * setup.birthEnergy(), childGenome, father.position, new Pair<>(mother, father));
     }
 
     public static List<Animal> sort(Collection<Animal> animals) {
@@ -143,6 +151,6 @@ public class Animal implements WorldElement {
     }
 
     public AnimalStats getStats() {
-        return new AnimalStats(genome, activeGene, energy, grassEaten, childCount, descendantCount, liveSpan, deathDate);
+        return new AnimalStats(genome, activeGene, energy, grassEaten, childCount, descendantCount, liveSpan, Optional.ofNullable(deathDate));
     }
 }
