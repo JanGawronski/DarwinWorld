@@ -1,16 +1,13 @@
 package model.elements.grass.generators;
 
-import org.junit.jupiter.api.Test;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
-import java.util.Set;
-
 import model.Vector2d;
 import model.elements.grass.Grass;
 import model.map.WorldMap;
+import org.junit.jupiter.api.Test;
+
+import java.util.Set;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 public class ForestedEquatorsTest {
     @Test
@@ -51,7 +48,7 @@ public class ForestedEquatorsTest {
     void unique() {
         WorldMap map = new WorldMap(10, 10);
         ForestedEquators forestedEquators = new ForestedEquators(map);
-        Grass grasses[] = forestedEquators.generateGrass(100).toArray(Grass[]::new);
+        Grass[] grasses = forestedEquators.generateGrass(100).toArray(Grass[]::new);
         for (int i = 0; i < 100; i++)
             for (int j = i + 1; j < 100; j++)
                 assertNotEquals(grasses[i].getPosition(), grasses[j].getPosition());
@@ -67,6 +64,6 @@ public class ForestedEquatorsTest {
         for (Grass grass : grasses) {
             assertTrue(grass.getPosition().precedes(upperRight) && grass.getPosition().follows(lowerLeft));
         }
-        
+
     }
 }

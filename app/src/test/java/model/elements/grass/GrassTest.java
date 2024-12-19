@@ -1,11 +1,9 @@
 package model.elements.grass;
 
-import org.junit.jupiter.api.Test;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-
 import model.Vector2d;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 public class GrassTest {
     @Test
@@ -28,11 +26,11 @@ public class GrassTest {
 
                 assertTrue(grass.isAt(position));
             }
-        
+
         Vector2d position = new Vector2d(0, 0);
         Grass grass = new Grass(new Vector2d(1, 0));
 
         assertFalse(grass.isAt(position));
-        
+
     }
 }

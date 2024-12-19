@@ -1,16 +1,15 @@
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.List;
-import java.util.concurrent.ThreadLocalRandom;
-import java.util.Map;
-
-import model.map.WorldMap;
 import model.AnimalConfigData;
 import model.Vector2d;
 import model.elements.animal.Animal;
 import model.elements.grass.Grass;
 import model.elements.grass.generators.GrassGenerator;
+import model.map.WorldMap;
+
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class Simulation implements Runnable {
     private final HashSet<Animal> animals = new HashSet<>();
@@ -22,7 +21,7 @@ public class Simulation implements Runnable {
     private int day = 0;
 
     public Simulation(WorldMap map, AnimalConfigData animalConfigData, GrassGenerator grassGenerator,
-            int initialGrassCount, int grassGrowthRate, int initialAnimalCount, int initialEnergy) {
+                      int initialGrassCount, int grassGrowthRate, int initialAnimalCount, int initialEnergy) {
         this.map = map;
         this.grassGenerator = grassGenerator;
         this.grassGrowthRate = grassGrowthRate;
