@@ -1,18 +1,17 @@
 package model.elements.animal;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import model.AnimalConfigData;
+import model.Vector2d;
+import model.map.WorldMap;
+import org.junit.jupiter.api.Test;
 
 import java.util.List;
 import java.util.Set;
 
-import org.junit.jupiter.api.Test;
-
-import model.AnimalConfigData;
-import model.Vector2d;
-import model.map.WorldMap;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class AnimalTest {
-    
+
     @Test
     public void sort() {
         AnimalConfigData config = new AnimalConfigData(1, 1, 1, true, 1, 1, 1);
@@ -29,5 +28,5 @@ public class AnimalTest {
 
         assertEquals(List.of(animal1, animal2, animal3, animal4, animal5), Animal.sort(Set.of(animal1, animal2, animal3, animal4, animal5)));
     }
-    
+
 }

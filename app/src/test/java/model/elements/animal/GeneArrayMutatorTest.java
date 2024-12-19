@@ -10,12 +10,12 @@ class GeneArrayMutatorTest {
     @Test
     void illegalArguments() {
         assertThrows(IllegalArgumentException.class, () -> new GeneArrayMutator(5, 3, 10));
-        assertThrows(IllegalArgumentException.class, () -> new GeneArrayMutator(-1, 3, 10));
-        assertThrows(IllegalArgumentException.class, () -> new GeneArrayMutator(3, 20, 10));
+        assertThrows(IndexOutOfBoundsException.class, () -> new GeneArrayMutator(-1, 3, 10));
+        assertThrows(IndexOutOfBoundsException.class, () -> new GeneArrayMutator(3, 20, 10));
     }
 
     @Test
-    void mutate() {
+    void mutateOnce() {
         GeneArrayMutator zero = new GeneArrayMutator(0, 0, 10);
         GeneArrayMutator all = new GeneArrayMutator(10, 10, 10);
         GeneArrayMutator medium = new GeneArrayMutator(5, 5, 10);
@@ -36,7 +36,7 @@ class GeneArrayMutatorTest {
         int seenMax = -10;
 
         int diffCount = 0;
-        for (int i=0; i<10;i++) {
+        for (int i = 0; i < 10; i++) {
             if (original[i] != zeroDiff[i])
                 diffCount++;
             seenMin = Math.min(seenMin, zeroDiff[i]);
@@ -45,7 +45,7 @@ class GeneArrayMutatorTest {
         assertEquals(0, diffCount);
 
         diffCount = 0;
-        for (int i=0; i<10;i++) {
+        for (int i = 0; i < 10; i++) {
             if (original[i] != allDiff[i])
                 diffCount++;
             seenMin = Math.min(seenMin, allDiff[i]);
@@ -54,7 +54,7 @@ class GeneArrayMutatorTest {
         assertEquals(10, diffCount);
 
         diffCount = 0;
-        for (int i=0; i<10;i++) {
+        for (int i = 0; i < 10; i++) {
             if (original[i] != mediumDiff[i])
                 diffCount++;
             seenMin = Math.min(seenMin, mediumDiff[i]);
@@ -64,5 +64,23 @@ class GeneArrayMutatorTest {
 
         assertEquals(0, Math.min(0, seenMin));
         assertEquals(7, Math.max(7, seenMax));
+    }
+
+    @Test
+    void mutateMany() {
+        int[] original = new int[]{0, 1, 5, 2, 5, 3, 7, 4, 6, 5};
+        GeneArrayMutator mutator = new GeneArrayMutator(3, 7, original.length);
+
+        for (int count = 0; count < 1000; count++) {
+            int[] test = original.clone();
+            mutator.mutate(test);
+            int diffCount = 0;
+            assertEquals(original.length, test.length);
+            for (int i = 0; i < original.length; i++)
+                if (original[i] != test[i])
+                    diffCount++;
+            assertEquals(3, Math.min(3, diffCount));
+            assertEquals(7, Math.max(7, diffCount));
+        }
     }
 }

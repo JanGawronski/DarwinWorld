@@ -1,14 +1,14 @@
 package model.elements.grass.generators;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.concurrent.ThreadLocalRandom;
-import java.util.Set;
-
 import model.Vector2d;
 import model.elements.grass.Grass;
 import model.map.WorldMap;
+
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.concurrent.ThreadLocalRandom;
 
 public abstract class AbstractGrassGenerator implements GrassGenerator {
     protected final WorldMap map;
@@ -41,17 +41,26 @@ public abstract class AbstractGrassGenerator implements GrassGenerator {
 
         List<Vector2d> positions;
         for (int i = 0; i < count; i++) {
-            if (ThreadLocalRandom.current().nextInt(5) <= 3 && !preferredPositions.isEmpty())
-                positions = preferredPositions;
-            else
-                positions = notPreferredPositions;
-            
+//            wybieranie się wywalało gdy wszystkie pozycje były prefferred
+//            twoje testy nie wyłapały tego bo był bug w mapie sry, teraz powinno już działać
+            positions = selectPositions(preferredPositions, notPreferredPositions);
+
             int index = ThreadLocalRandom.current().nextInt(positions.size());
             grasses.add(new Grass(positions.get(index)));
             positions.set(index, positions.getLast());
             positions.removeLast();
         }
         return grasses;
+    }
+
+    private List<Vector2d> selectPositions(List<Vector2d> preferred, List<Vector2d> notPreferred) {
+        if (preferred.isEmpty())
+            return notPreferred;
+        if (notPreferred.isEmpty())
+            return preferred;
+        if (ThreadLocalRandom.current().nextInt(5) <= 3)
+            return preferred;
+        return notPreferred;
     }
 
     protected abstract boolean isPreferred(Vector2d position);

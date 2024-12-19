@@ -6,13 +6,7 @@ import model.Vector2d;
 import model.elements.animal.Animal;
 import model.elements.grass.Grass;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.Map;
+import java.util.*;
 
 public class WorldMap implements MoveConverter {
     private final HashMap<Vector2d, HashSet<Animal>> animals = new HashMap<>();
@@ -21,9 +15,11 @@ public class WorldMap implements MoveConverter {
     private final Vector2d lowerLeft;
     private final Vector2d upperRight;
 
-    public WorldMap(int width, int height) {
+    public WorldMap(int height, int width) {
+        if (width <= 0 || height <= 0)
+            throw new IllegalArgumentException("Map dimensions must be positive");
         this.lowerLeft = new Vector2d(0, 0);
-        this.upperRight = new Vector2d(width, height);
+        this.upperRight = new Vector2d(width - 1, height - 1);
     }
 
     public void place(Animal animal) {
@@ -84,10 +80,10 @@ public class WorldMap implements MoveConverter {
         if (position.x() < lowerLeft.x())
             return new Pair<>(new Vector2d(upperRight.x(), position.y()), orientation);
         if (position.x() > upperRight.x())
-            return new Pair<>(new Vector2d(lowerLeft.x(), position.x()), orientation);
+            return new Pair<>(new Vector2d(lowerLeft.x(), position.y()), orientation);
         return new Pair<>(position, orientation);
     }
- 
+
     public Map<Vector2d, HashSet<Animal>> getAnimalsMap() {
         return Collections.unmodifiableMap(animals);
     }
@@ -105,11 +101,11 @@ public class WorldMap implements MoveConverter {
     }
 
     public int getWidth() {
-        return upperRight.x();
+        return upperRight.x() + 1;
     }
 
     public int getHeight() {
-        return upperRight.y();
+        return upperRight.y() + 1;
     }
 
 }

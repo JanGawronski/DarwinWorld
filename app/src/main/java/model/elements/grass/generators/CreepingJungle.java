@@ -1,10 +1,10 @@
 package model.elements.grass.generators;
 
-import java.util.Set;
-
-import model.Vector2d;
 import model.MapDirection;
+import model.Vector2d;
 import model.map.WorldMap;
+
+import java.util.Set;
 
 public class CreepingJungle extends AbstractGrassGenerator {
     public CreepingJungle(WorldMap map) {

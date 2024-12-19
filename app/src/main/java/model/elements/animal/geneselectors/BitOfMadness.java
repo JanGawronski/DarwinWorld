@@ -10,7 +10,7 @@ public class BitOfMadness extends NextGeneSelector {
     @Override
     public int nextGene(int currentGene) {
         if (currentGene >= genomeLength || currentGene < 0)
-            throw new IllegalArgumentException("Previous gene was out of bounds");
+            throw new IndexOutOfBoundsException("Previous gene was out of bounds");
 
         if (ThreadLocalRandom.current().nextInt(0, 5) != 0)
             return (currentGene + 1) % genomeLength;
