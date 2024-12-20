@@ -16,19 +16,24 @@ public class Simulation implements Runnable {
     private final HashSet<Animal> deadAnimals = new HashSet<>();
     private final WorldMap map;
     private final GrassGenerator grassGenerator;
-    private final AnimalConfigData animalConfig;
+    //    private final AnimalConfigData animalConfig;
     private final int grassGrowthRate;
+    private final int saturationEnergy;
     private int day = 0;
 
     public Simulation(WorldMap map, AnimalConfigData animalConfigData, GrassGenerator grassGenerator,
-                      int initialGrassCount, int grassGrowthRate, int initialAnimalCount, int initialEnergy) {
+                      int initialGrassCount, int grassGrowthRate, int initialAnimalCount, int initialEnergy, int saturationEnergy) {
+        if (initialGrassCount > map.getHeight() * map.getWidth())
+            throw new IllegalArgumentException("Initial grass count cannot exceed map size");
+        if (saturationEnergy < 0)
+            throw new IllegalArgumentException("Saturation energy must be non-negative");
+
         this.map = map;
         this.grassGenerator = grassGenerator;
         this.grassGrowthRate = grassGrowthRate;
-        this.animalConfig = animalConfigData;
+//        this.animalConfig = animalConfigData;
+        this.saturationEnergy = saturationEnergy;
 
-        if (initialGrassCount > map.getHeight() * map.getWidth())
-            throw new IllegalArgumentException("Initial grass count cannot exceed map size");
 
         Set<Grass> grasses = grassGenerator.generateGrass(initialGrassCount);
         for (Grass grass : grasses)
@@ -87,11 +92,11 @@ public class Simulation implements Runnable {
 
     private void breedAnimals() {
         Map<Vector2d, HashSet<Animal>> animalsByPosition = map.getAnimalsMap();
-        for (HashSet<Animal> animals : animalsByPosition.values()) {
-            if (animals.size() >= 2) {
-                List<Animal> sortedAnimals = Animal.sort(animals);
-                if (sortedAnimals.get(1).getEnergy() >= animalConfig.saturationEnergy())
-                    Animal.breed(sortedAnimals.get(0), sortedAnimals.get(1), animals.size() + deadAnimals.size());
+        for (HashSet<Animal> animalsInPosition : animalsByPosition.values()) {
+            if (animalsInPosition.size() >= 2) {
+                List<Animal> sortedAnimals = Animal.sort(animalsInPosition);
+                if (sortedAnimals.get(1).getEnergy() >= this.saturationEnergy)
+                    Animal.breed(sortedAnimals.get(0), sortedAnimals.get(1), this.animals.size() + deadAnimals.size());
             }
         }
     }

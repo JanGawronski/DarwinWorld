@@ -5,19 +5,18 @@ import model.elements.animal.geneselectors.BitOfMadness;
 import model.elements.animal.geneselectors.FullPredestination;
 import model.elements.animal.geneselectors.NextGeneSelector;
 
-public record AnimalConfigData(int feedEnergy, int birthEnergy, int saturationEnergy, NextGeneSelector selector,
+// to powinno być tylko to co obchodzi animala, saturation energy chyba lepiej trzymać w symulacji
+public record AnimalConfigData(int feedEnergy, int birthEnergy, NextGeneSelector selector,
                                GeneArrayMutator mutator) {
     public AnimalConfigData {
         if (feedEnergy < 0)
             throw new IllegalArgumentException("Energy gained from eating cannot be negative");
         if (birthEnergy <= 0)
             throw new IllegalArgumentException("Child's energy must be positive");
-        if (saturationEnergy < 0)
-            throw new IllegalArgumentException("Saturation energy must be non-negative");
     }
 
-    public AnimalConfigData(int feedEnergy, int birthEnergy, int saturationEnergy, boolean selectorType, int genomeLength, int minMutations, int maxMutations) {
-        this(feedEnergy, birthEnergy, saturationEnergy, makeSelector(selectorType, genomeLength), makeMutator(minMutations, maxMutations, genomeLength));
+    public AnimalConfigData(int feedEnergy, int birthEnergy, int saturationEnergy, boolean ifBasicSelector, int genomeLength, int minMutations, int maxMutations) {
+        this(feedEnergy, birthEnergy, makeSelector(ifBasicSelector, genomeLength), makeMutator(minMutations, maxMutations, genomeLength));
     }
 
     private static NextGeneSelector makeSelector(boolean selectorType, int genomeLength) {

@@ -66,7 +66,7 @@ public class AnimalTest {
         assertEquals(1, st[2].descendants());
         assertEquals(2, st[3].descendants());
         assertEquals(1, st[4].descendants());
-        for(int i=5;i<=7;i++)
+        for (int i = 5; i <= 7; i++)
             assertEquals(0, st[i].descendants());
 
         assertEquals(4, st[0].children());
@@ -74,7 +74,7 @@ public class AnimalTest {
         assertEquals(1, st[2].children());
         assertEquals(2, st[3].children());
         assertEquals(1, st[4].children());
-        for(int i=5;i<=7;i++)
+        for (int i = 5; i <= 7; i++)
             assertEquals(0, st[i].children());
 
         assertThrows(IllegalArgumentException.class, () -> Animal.breed(c3, a0, 10));
@@ -89,7 +89,7 @@ public class AnimalTest {
         Animal a1 = new Animal(c1, 100, p);
         Animal a2 = new Animal(c2, 0, p);
 
-        for (int i=0;i<20;i++)
+        for (int i = 0; i < 20; i++)
             a1.eat();
         a2.eat();
 
