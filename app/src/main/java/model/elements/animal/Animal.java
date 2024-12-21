@@ -51,7 +51,7 @@ public class Animal implements WorldElement {
         this(config, startingEnergy, Genome.randomGenome(config.selector().getGenomeLength()), ThreadLocalRandom.current().nextInt(config.selector().getGenomeLength()), MapDirection.randomDirection(), position, null);
     }
 
-    public static Animal breed(Animal father, Animal mother, int breedId) {
+    public static Animal breed(Animal father, Animal mother, int breedId) throws ParentNotSaturatedException {
         if (father == mother)
             throw new IllegalArgumentException("Parents be different Animals");
         if (father.config != mother.config)
@@ -60,7 +60,7 @@ public class Animal implements WorldElement {
         if (father.position != mother.position)
             throw new IllegalArgumentException("Parents must have the same position");
         if (father.energy < setup.saturationEnergy() || mother.energy < setup.saturationEnergy())
-            throw new IllegalArgumentException("Parent's must be saturated");
+            throw new ParentNotSaturatedException();
 
         Genome childGenome = Genome.breedGenome(mother.genome, mother.energy, father.genome, father.energy, setup.mutator());
         father.childCount++;
@@ -72,7 +72,7 @@ public class Animal implements WorldElement {
         return new Animal(setup, 2 * setup.birthEnergy(), childGenome, father.position, new Pair<>(mother, father));
     }
 
-    public static List<Animal> sort(Collection<Animal> animals) {
+    public static List<Animal> sorted(Collection<Animal> animals) {
         return animals.stream()
                 .sorted(Comparator.comparingInt((Animal animal) -> animal.energy)
                         .thenComparingInt(animal -> animal.liveSpan)

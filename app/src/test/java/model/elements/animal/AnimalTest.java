@@ -1,7 +1,10 @@
 package model.elements.animal;
 
 import model.AnimalConfigData;
+import model.MapDirection;
+import model.Pair;
 import model.Vector2d;
+import model.map.MoveConverter;
 import model.map.WorldMap;
 import org.junit.jupiter.api.Test;
 
@@ -14,7 +17,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 public class AnimalTest {
 
     @Test
-    public void sort() {
+    public void sorted() {
         AnimalConfigData config = new AnimalConfigData(1, 1, 1, true, 1, 1, 1);
         Vector2d position = new Vector2d(0, 0);
         Animal animal1 = new Animal(config, 20, position);
@@ -27,12 +30,12 @@ public class AnimalTest {
         animal2.move(map);
 
 
-        assertEquals(List.of(animal1, animal2, animal3, animal4, animal5), Animal.sort(Set.of(animal1, animal2, animal3, animal4, animal5)));
+        assertEquals(List.of(animal1, animal2, animal3, animal4, animal5), Animal.sorted(Set.of(animal1, animal2, animal3, animal4, animal5)));
     }
 
     @Test
     void breed() {
-        AnimalConfigData config = new AnimalConfigData(0, 1, 6, true, 1, 0, 0);
+        AnimalConfigData config = new AnimalConfigData(0, 1, 1, true, 1, 0, 0);
         AnimalConfigData config2 = new AnimalConfigData(1, 1, 1, true, 1, 1, 1);
         Vector2d p = new Vector2d(0, 0);
         Animal a0 = new Animal(config, 100, p);
@@ -97,5 +100,34 @@ public class AnimalTest {
         assertEquals(1, a2.getEnergy());
         assertEquals(20, a1.getStats().grassEaten());
         assertEquals(1, a2.getStats().grassEaten());
+    }
+
+    @Test
+    void move() {
+        MoveConverter dummyConverter = new MoveConverter() {
+            @Override
+            public Pair<Vector2d, MapDirection> convert(Vector2d position, MapDirection orientation) {
+                return new Pair<>(position, orientation);
+            }
+        };
+        Genome g = new Genome(new int[]{0, 2, 1, 6});
+        AnimalConfigData c = new AnimalConfigData(5, 1, 1, true, g.length(), 1, 1);
+        Animal animal = new Animal(c, 10, g, 0, MapDirection.N, new Vector2d(0, 0), null);
+
+        animal.move(dummyConverter);
+        assertEquals(MapDirection.N, animal.getOrientation());
+        assertEquals(new Vector2d(0, 1), animal.getPosition());
+        animal.move(dummyConverter);
+        assertEquals(MapDirection.E, animal.getOrientation());
+        assertEquals(new Vector2d(1, 1), animal.getPosition());
+        animal.move(dummyConverter);
+        assertEquals(MapDirection.SE, animal.getOrientation());
+        assertEquals(new Vector2d(2, 0), animal.getPosition());
+        animal.move(dummyConverter);
+        assertEquals(MapDirection.NE, animal.getOrientation());
+        assertEquals(new Vector2d(3, 1), animal.getPosition());
+        animal.move(dummyConverter);
+        assertEquals(MapDirection.NE, animal.getOrientation());
+        assertEquals(new Vector2d(4, 2), animal.getPosition());
     }
 }

@@ -1,6 +1,7 @@
 import model.AnimalConfigData;
 import model.Vector2d;
 import model.elements.animal.Animal;
+import model.elements.animal.ParentNotSaturatedException;
 import model.elements.grass.Grass;
 import model.elements.grass.generators.GrassGenerator;
 import model.map.WorldMap;
@@ -16,7 +17,7 @@ public class Simulation implements Runnable {
     private final HashSet<Animal> deadAnimals = new HashSet<>();
     private final WorldMap map;
     private final GrassGenerator grassGenerator;
-    private final AnimalConfigData animalConfig;
+    //private final AnimalConfigData animalConfig;
     private final int grassGrowthRate;
     private int day = 0;
 
@@ -25,7 +26,7 @@ public class Simulation implements Runnable {
         this.map = map;
         this.grassGenerator = grassGenerator;
         this.grassGrowthRate = grassGrowthRate;
-        this.animalConfig = animalConfigData;
+        //this.animalConfig = animalConfigData;
 
         if (initialGrassCount > map.getHeight() * map.getWidth())
             throw new IllegalArgumentException("Initial grass count cannot exceed map size");
@@ -39,7 +40,7 @@ public class Simulation implements Runnable {
                     ThreadLocalRandom.current().nextInt(map.getHeight()));
             Animal animal = new Animal(animalConfigData, initialEnergy, position);
             animals.add(animal);
-            map.place(animal);
+            this.map.place(animal);
         }
     }
 
@@ -79,7 +80,7 @@ public class Simulation implements Runnable {
             Set<Animal> animalsOnGrass = map.getAnimalsAt(grass.getPosition());
             if (animalsOnGrass.isEmpty())
                 continue;
-            Animal animal = Animal.sort(animalsOnGrass).getFirst();
+            Animal animal = Animal.sorted(animalsOnGrass).getFirst();
             animal.eat();
             map.remove(grass);
         }
@@ -89,9 +90,15 @@ public class Simulation implements Runnable {
         Map<Vector2d, HashSet<Animal>> animalsByPosition = map.getAnimalsMap();
         for (HashSet<Animal> positionAnimals : animalsByPosition.values()) {
             if (positionAnimals.size() >= 2) {
-                List<Animal> sortedAnimals = Animal.sort(positionAnimals);
-                if (sortedAnimals.get(1).getEnergy() >= animalConfig.saturationEnergy())
-                    Animal.breed(sortedAnimals.get(0), sortedAnimals.get(1), this.animals.size() + this.deadAnimals.size());
+                List<Animal> sortedAnimals = Animal.sorted(positionAnimals);
+                try {
+                    Animal child = Animal.breed(sortedAnimals.get(0), sortedAnimals.get(1), this.animals.size() + this.deadAnimals.size());
+                    animals.add(child);
+                    map.place(child);
+                } catch (ParentNotSaturatedException e) {
+                    // not enough energy in parents, no child
+                }
+
             }
         }
     }
