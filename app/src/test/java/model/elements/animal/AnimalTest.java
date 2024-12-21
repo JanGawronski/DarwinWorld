@@ -11,8 +11,7 @@ import org.junit.jupiter.api.Test;
 import java.util.List;
 import java.util.Set;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class AnimalTest {
 
@@ -24,7 +23,13 @@ public class AnimalTest {
         Animal animal2 = new Animal(config, 11, position);
         Animal animal3 = new Animal(config, 10, position);
         Animal animal4 = new Animal(config, 9, position);
-        Animal animal5 = Animal.breed(animal2, animal3, 0);
+        Animal animal5 = null;
+        try {
+            animal5 = Animal.breed(animal2, animal3, 0);
+        } catch (ParentNotSaturatedException e) {
+            fail();
+        }
+
 
         WorldMap map = new WorldMap(10, 10);
         animal2.move(map);
@@ -48,39 +53,44 @@ public class AnimalTest {
         assertThrows(IllegalArgumentException.class, () -> Animal.breed(a2, different2, 0));
         assertThrows(IllegalArgumentException.class, () -> Animal.breed(a1, a1, 0));
 
-        Animal c3 = Animal.breed(a0, a1, 1);
-        Animal c4 = Animal.breed(a0, a1, 2);
-        Animal c5 = Animal.breed(a0, c3, 3);
-        Animal c6 = Animal.breed(a0, a2, 4);
-        Animal c7 = Animal.breed(c3, c4, 5);
+        try {
+            Animal c3 = Animal.breed(a0, a1, 1);
+            Animal c4 = Animal.breed(a0, a1, 2);
+            Animal c5 = Animal.breed(a0, c3, 3);
+            Animal c6 = Animal.breed(a0, a2, 4);
+            Animal c7 = Animal.breed(c3, c4, 5);
 
-        AnimalStats[] st = new AnimalStats[]{a0.getStats(), a1.getStats(), a2.getStats(), c3.getStats(), c4.getStats(), c5.getStats(), c6.getStats(), c7.getStats()};
 
-        assertEquals(96, st[0].energy());
-        assertEquals(78, st[1].energy());
-        assertEquals(9, st[2].energy());
-        assertEquals(0, st[3].energy());
-        assertEquals(1, st[4].energy());
-        assertEquals(2, st[5].energy());
-        assertEquals(2, st[6].energy());
+            AnimalStats[] st = new AnimalStats[]{a0.getStats(), a1.getStats(), a2.getStats(), c3.getStats(), c4.getStats(), c5.getStats(), c6.getStats(), c7.getStats()};
 
-        assertEquals(5, st[0].descendants());
-        assertEquals(4, st[1].descendants());
-        assertEquals(1, st[2].descendants());
-        assertEquals(2, st[3].descendants());
-        assertEquals(1, st[4].descendants());
-        for(int i=5;i<=7;i++)
-            assertEquals(0, st[i].descendants());
+            assertEquals(96, st[0].energy());
+            assertEquals(78, st[1].energy());
+            assertEquals(9, st[2].energy());
+            assertEquals(0, st[3].energy());
+            assertEquals(1, st[4].energy());
+            assertEquals(2, st[5].energy());
+            assertEquals(2, st[6].energy());
 
-        assertEquals(4, st[0].children());
-        assertEquals(2, st[1].children());
-        assertEquals(1, st[2].children());
-        assertEquals(2, st[3].children());
-        assertEquals(1, st[4].children());
-        for(int i=5;i<=7;i++)
-            assertEquals(0, st[i].children());
+            assertEquals(5, st[0].descendants());
+            assertEquals(4, st[1].descendants());
+            assertEquals(1, st[2].descendants());
+            assertEquals(2, st[3].descendants());
+            assertEquals(1, st[4].descendants());
+            for (int i = 5; i <= 7; i++)
+                assertEquals(0, st[i].descendants());
 
-        assertThrows(IllegalArgumentException.class, () -> Animal.breed(c3, a0, 10));
+            assertEquals(4, st[0].children());
+            assertEquals(2, st[1].children());
+            assertEquals(1, st[2].children());
+            assertEquals(2, st[3].children());
+            assertEquals(1, st[4].children());
+            for (int i = 5; i <= 7; i++)
+                assertEquals(0, st[i].children());
+
+            assertThrows(ParentNotSaturatedException.class, () -> Animal.breed(c3, a0, 10));
+        } catch (ParentNotSaturatedException e) {
+            fail();
+        }
 
     }
 
@@ -104,12 +114,7 @@ public class AnimalTest {
 
     @Test
     void move() {
-        MoveConverter dummyConverter = new MoveConverter() {
-            @Override
-            public Pair<Vector2d, MapDirection> convert(Vector2d position, MapDirection orientation) {
-                return new Pair<>(position, orientation);
-            }
-        };
+        MoveConverter dummyConverter = Pair::new;
         Genome g = new Genome(new int[]{0, 2, 1, 6});
         AnimalConfigData c = new AnimalConfigData(5, 1, 1, true, g.length(), 1, 1);
         Animal animal = new Animal(c, 10, g, 0, MapDirection.N, new Vector2d(0, 0), null);
