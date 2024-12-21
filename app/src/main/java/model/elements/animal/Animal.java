@@ -59,8 +59,8 @@ public class Animal implements WorldElement {
         AnimalConfigData setup = mother.config;
         if (father.position != mother.position)
             throw new IllegalArgumentException("Parents must have the same position");
-        if (father.energy < setup.birthEnergy() || mother.energy < setup.birthEnergy())
-            throw new IllegalArgumentException("Parent's must have enough energy to give up");
+        if (father.energy < setup.saturationEnergy() || mother.energy < setup.saturationEnergy())
+            throw new IllegalArgumentException("Parent's must be saturated");
 
         Genome childGenome = Genome.breedGenome(mother.genome, mother.energy, father.genome, father.energy, setup.mutator());
         father.childCount++;

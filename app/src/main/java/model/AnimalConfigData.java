@@ -14,6 +14,8 @@ public record AnimalConfigData(int feedEnergy, int birthEnergy, int saturationEn
             throw new IllegalArgumentException("Child's energy must be positive");
         if (saturationEnergy < 0)
             throw new IllegalArgumentException("Saturation energy must be non-negative");
+        if (saturationEnergy < birthEnergy)
+            throw new IllegalArgumentException("Saturation energy must be larger than birth energy");
     }
 
     public AnimalConfigData(int feedEnergy, int birthEnergy, int saturationEnergy, boolean selectorType, int genomeLength, int minMutations, int maxMutations) {

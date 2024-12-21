@@ -87,11 +87,11 @@ public class Simulation implements Runnable {
 
     private void breedAnimals() {
         Map<Vector2d, HashSet<Animal>> animalsByPosition = map.getAnimalsMap();
-        for (HashSet<Animal> animals : animalsByPosition.values()) {
-            if (animals.size() >= 2) {
-                List<Animal> sortedAnimals = Animal.sort(animals);
+        for (HashSet<Animal> positionAnimals : animalsByPosition.values()) {
+            if (positionAnimals.size() >= 2) {
+                List<Animal> sortedAnimals = Animal.sort(positionAnimals);
                 if (sortedAnimals.get(1).getEnergy() >= animalConfig.saturationEnergy())
-                    Animal.breed(sortedAnimals.get(0), sortedAnimals.get(1), animals.size() + deadAnimals.size());
+                    Animal.breed(sortedAnimals.get(0), sortedAnimals.get(1), this.animals.size() + this.deadAnimals.size());
             }
         }
     }
