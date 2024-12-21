@@ -15,7 +15,7 @@ public record AnimalConfigData(int feedEnergy, int birthEnergy, NextGeneSelector
             throw new IllegalArgumentException("Child's energy must be positive");
     }
 
-    public AnimalConfigData(int feedEnergy, int birthEnergy, boolean ifBasicSelector, int genomeLength, int minMutations, int maxMutations) {
+    public AnimalConfigData(int feedEnergy, int birthEnergy, int saturationEnergy, boolean ifBasicSelector, int genomeLength, int minMutations, int maxMutations) {
         this(feedEnergy, birthEnergy, makeSelector(ifBasicSelector, genomeLength), makeMutator(minMutations, maxMutations, genomeLength));
     }
 

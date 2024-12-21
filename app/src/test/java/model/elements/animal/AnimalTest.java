@@ -15,7 +15,7 @@ public class AnimalTest {
 
     @Test
     public void sort() {
-        AnimalConfigData config = new AnimalConfigData(1, 1, true, 1, 1, 1);
+        AnimalConfigData config = new AnimalConfigData(1, 1, 1, true, 1, 1, 1);
         Vector2d position = new Vector2d(0, 0);
         Animal animal1 = new Animal(config, 20, position);
         Animal animal2 = new Animal(config, 11, position);
@@ -32,8 +32,8 @@ public class AnimalTest {
 
     @Test
     void breed() {
-        AnimalConfigData config = new AnimalConfigData(0, 1, true, 1, 0, 0);
-        AnimalConfigData config2 = new AnimalConfigData(1, 1, true, 1, 1, 1);
+        AnimalConfigData config = new AnimalConfigData(0, 1, 6, true, 1, 0, 0);
+        AnimalConfigData config2 = new AnimalConfigData(1, 1, 1, true, 1, 1, 1);
         Vector2d p = new Vector2d(0, 0);
         Animal a0 = new Animal(config, 100, p);
         Animal a1 = new Animal(config, 80, p);
@@ -83,8 +83,8 @@ public class AnimalTest {
 
     @Test
     void eat() {
-        AnimalConfigData c1 = new AnimalConfigData(5, 1, true, 1, 1, 1);
-        AnimalConfigData c2 = new AnimalConfigData(1, 1, true, 1, 1, 1);
+        AnimalConfigData c1 = new AnimalConfigData(5, 1, 1, true, 1, 1, 1);
+        AnimalConfigData c2 = new AnimalConfigData(1, 1, 1, true, 1, 1, 1);
         Vector2d p = new Vector2d(0, 0);
         Animal a1 = new Animal(c1, 100, p);
         Animal a2 = new Animal(c2, 0, p);
