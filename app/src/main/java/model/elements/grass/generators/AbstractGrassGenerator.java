@@ -41,8 +41,6 @@ public abstract class AbstractGrassGenerator implements GrassGenerator {
 
         List<Vector2d> positions;
         for (int i = 0; i < count; i++) {
-//            wybieranie się wywalało gdy wszystkie pozycje były prefferred
-//            twoje testy nie wyłapały tego bo był bug w mapie sry, teraz powinno już działać
             positions = selectPositions(preferredPositions, notPreferredPositions);
 
             int index = ThreadLocalRandom.current().nextInt(positions.size());
