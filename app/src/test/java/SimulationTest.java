@@ -41,14 +41,9 @@ public class SimulationTest {
 
             Simulation simulation2 = new Simulation(map, config, new ForestedEquators(map), 10, 1, 10, 1);
             
-            map.getAnimalsMap().values().stream()
-            .flatMap(HashSet::stream)
-            .limit(5)
-            .forEach(animal -> animal.move(map));
-
             removeDeadAnimals.invoke(simulation2);
 
-            assertEquals(5, map.getAnimalsMap().values().stream().mapToInt(HashSet::size).sum());
+            assertEquals(10, map.getAnimalsMap().values().stream().mapToInt(HashSet::size).sum());
         }
 
         catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {

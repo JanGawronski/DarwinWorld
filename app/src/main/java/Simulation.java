@@ -60,10 +60,10 @@ public class Simulation implements Runnable {
         for (Animal animal : animals)
             if (animal.getEnergy() == 0) {
                 map.remove(animal);
-                animals.remove(animal);
                 deadAnimals.add(animal);
                 animal.setDeathDay(day);
             }
+        animals.removeIf(animal -> animal.getEnergy() == 0);
     }
 
     private void moveAnimals() {
