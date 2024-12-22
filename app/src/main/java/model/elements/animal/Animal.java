@@ -54,10 +54,10 @@ public class Animal implements WorldElement {
     public static Animal breed(Animal father, Animal mother, int breedId) throws ParentNotSaturatedException {
         if (father == mother)
             throw new IllegalArgumentException("Parents be different Animals");
-        if (father.config != mother.config)
+        if (!father.config.equals(mother.config))
             throw new IllegalArgumentException("Parents must have the same configuration");
         AnimalConfigData setup = mother.config;
-        if (father.position != mother.position)
+        if (!father.position.equals(mother.position))
             throw new IllegalArgumentException("Parents must have the same position");
         if (father.energy < setup.saturationEnergy() || mother.energy < setup.saturationEnergy())
             throw new ParentNotSaturatedException();
