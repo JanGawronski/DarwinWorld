@@ -63,4 +63,18 @@ public abstract class AbstractGrassGenerator implements GrassGenerator {
 
     protected abstract boolean isPreferred(Vector2d position);
 
+    @Override
+    public List<Vector2d> getPreferred() {
+        List<Vector2d> preferredPositions = new ArrayList<>();
+        Set<Vector2d> grassesPositions = map.getGrassesPositions();
+        for (int x = 0; x < map.getWidth(); x++)
+            for (int y = 0; y < map.getHeight(); y++) {
+                Vector2d position = new Vector2d(x, y);
+                if (!grassesPositions.contains(position))
+                    if (isPreferred(position))
+                        preferredPositions.add(position);
+
+            }
+        return preferredPositions;
+    }
 }

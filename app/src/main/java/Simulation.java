@@ -1,15 +1,14 @@
 import model.AnimalConfigData;
 import model.Vector2d;
 import model.elements.animal.Animal;
+import model.elements.animal.AnimalStats;
+import model.elements.animal.Genome;
 import model.elements.animal.ParentNotSaturatedException;
 import model.elements.grass.Grass;
 import model.elements.grass.generators.GrassGenerator;
 import model.map.WorldMap;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class Simulation implements Runnable {
@@ -19,6 +18,7 @@ public class Simulation implements Runnable {
     private final GrassGenerator grassGenerator;
     //private final AnimalConfigData animalConfig;
     private final int grassGrowthRate;
+    private final HashMap<Genome, Integer> genomePopularity = new HashMap<>();
     private int day = 0;
 
     public Simulation(WorldMap map, AnimalConfigData animalConfigData, GrassGenerator grassGenerator,
@@ -40,6 +40,7 @@ public class Simulation implements Runnable {
                     ThreadLocalRandom.current().nextInt(map.getHeight()));
             Animal animal = new Animal(animalConfigData, initialEnergy, position);
             animals.add(animal);
+            genomePopularity.merge(animal.getGenome(), 1, Integer::sum);
             this.map.place(animal);
         }
     }
@@ -53,13 +54,13 @@ public class Simulation implements Runnable {
         growGrass();
 
         day++;
-
     }
 
     private void removeDeadAnimals() {
         for (Animal animal : animals)
             if (animal.getEnergy() == 0) {
                 map.remove(animal);
+                genomePopularity.computeIfPresent(animal.getGenome(), (k, v) -> (v - 1 == 0) ? null : v - 1);
                 deadAnimals.add(animal);
                 animal.setDeathDay(day);
             }
@@ -94,6 +95,7 @@ public class Simulation implements Runnable {
                 try {
                     Animal child = Animal.breed(sortedAnimals.get(0), sortedAnimals.get(1), this.animals.size() + this.deadAnimals.size());
                     animals.add(child);
+                    genomePopularity.merge(child.getGenome(), 1, Integer::sum);
                     map.place(child);
                 } catch (ParentNotSaturatedException e) {
                     // not enough energy in parents, no child
@@ -108,5 +110,39 @@ public class Simulation implements Runnable {
                 .generateGrass(Math.min(grassGrowthRate, map.getHeight() * map.getWidth() - map.getGrasses().size()));
         for (Grass grass : grasses)
             map.place(grass);
+    }
+
+    public void getStats() { // to są wszystkie potrzebne statystyki
+        int animalCount = animals.size();
+        int grassCount = map.getGrasses().size();
+        int emptySquareCount; //TODO
+        Map<Genome, Integer> genomeIntegerHashMap = Collections.unmodifiableMap(genomePopularity);
+        double averageEnergy = 0;
+        double averageLifeSpan = 0;
+        double averageLivingKids = 0;
+        for (Animal animal : animals) {
+            AnimalStats stats = animal.getStats();
+            averageEnergy += stats.energy();
+            averageLivingKids += stats.children();
+        }
+        for (Animal animal : deadAnimals) {
+            AnimalStats stats = animal.getStats();
+            averageLifeSpan += stats.lifeSpan();
+        }
+        averageEnergy /= animalCount;
+        averageLifeSpan /= deadAnimals.size();
+        averageLivingKids /= animalCount;
+    }
+
+    public List<Vector2d> getPreferredPositions() {
+        return grassGenerator.getPreferred();
+    }
+
+    public List<Animal> getPopularGenome() {
+        Optional<Genome> bestGenome = genomePopularity.entrySet().stream().max(Map.Entry.comparingByValue()).map(Map.Entry::getKey);
+        if (bestGenome.isEmpty()) {
+            return List.of();
+        }
+        return animals.stream().filter(animal -> animal.getGenome().equals(bestGenome.get())).toList();
     }
 }
