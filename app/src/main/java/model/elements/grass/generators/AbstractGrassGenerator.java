@@ -12,9 +12,15 @@ import java.util.concurrent.ThreadLocalRandom;
 
 public abstract class AbstractGrassGenerator implements GrassGenerator {
     protected final WorldMap map;
+    protected final List<Vector2d> places;
 
     public AbstractGrassGenerator(WorldMap map) {
         this.map = map;
+        this.places = new ArrayList<>();
+        for (int x = 0; x < map.getWidth(); x++)
+            for (int y = 0; y < map.getHeight(); y++) {
+                places.add(new Vector2d(x, y));
+            }
     }
 
     @Override
@@ -27,15 +33,13 @@ public abstract class AbstractGrassGenerator implements GrassGenerator {
         List<Vector2d> preferredPositions = new ArrayList<>();
         List<Vector2d> notPreferredPositions = new ArrayList<>();
         Set<Vector2d> grassesPositions = map.getGrassesPositions();
-        for (int x = 0; x < map.getWidth(); x++)
-            for (int y = 0; y < map.getHeight(); y++) {
-                Vector2d position = new Vector2d(x, y);
-                if (!grassesPositions.contains(position))
-                    if (isPreferred(position))
-                        preferredPositions.add(position);
-                    else
-                        notPreferredPositions.add(position);
-            }
+        for (Vector2d position : places) {
+            if (!grassesPositions.contains(position))
+                if (isPreferred(position))
+                    preferredPositions.add(position);
+                else
+                    notPreferredPositions.add(position);
+        }
 
         HashSet<Grass> grasses = new HashSet<>();
 
@@ -67,14 +71,11 @@ public abstract class AbstractGrassGenerator implements GrassGenerator {
     public List<Vector2d> getPreferred() {
         List<Vector2d> preferredPositions = new ArrayList<>();
         Set<Vector2d> grassesPositions = map.getGrassesPositions();
-        for (int x = 0; x < map.getWidth(); x++)
-            for (int y = 0; y < map.getHeight(); y++) {
-                Vector2d position = new Vector2d(x, y);
-                if (!grassesPositions.contains(position))
-                    if (isPreferred(position))
-                        preferredPositions.add(position);
+        for (Vector2d position : places)
+            if (!grassesPositions.contains(position))
+                if (isPreferred(position))
+                    preferredPositions.add(position);
 
-            }
         return preferredPositions;
     }
 }
