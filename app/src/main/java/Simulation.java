@@ -10,6 +10,10 @@ import model.map.WorldMap;
 
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
 
 public class Simulation implements Runnable {
     private final HashSet<Animal> animals = new HashSet<>();
@@ -20,6 +24,8 @@ public class Simulation implements Runnable {
     private final int grassGrowthRate;
     private final HashMap<Genome, Integer> genomePopularity = new HashMap<>();
     private int day = 0;
+    private ExecutorService executor;
+    private volatile int speed = 1;
 
     public Simulation(WorldMap map, AnimalConfigData animalConfigData, GrassGenerator grassGenerator,
                       int initialGrassCount, int grassGrowthRate, int initialAnimalCount, int initialEnergy) {
@@ -47,13 +53,41 @@ public class Simulation implements Runnable {
 
     @Override
     public void run() {
-        removeDeadAnimals();
-        moveAnimals();
-        eatGrass();
-        breedAnimals();
-        growGrass();
+        while (true) {
+            removeDeadAnimals();
+            moveAnimals();
+            eatGrass();
+            breedAnimals();
+            growGrass();
 
-        day++;
+            day++;
+
+            try {
+                Thread.sleep(1000 / speed);
+            } catch (InterruptedException e) {
+                return;
+            }
+        }
+    }
+
+    public void start() {
+        if (!(executor == null || executor.isTerminated() || executor.isShutdown()))
+            throw new IllegalStateException("Simulation is not stopped");
+        executor = Executors.newSingleThreadExecutor();
+        executor.submit(this);
+    }
+
+    public void stop() {
+        try {
+            executor.shutdownNow();
+            executor.awaitTermination(1, TimeUnit.SECONDS);
+        } catch (InterruptedException e) {
+            // do nothing
+        }
+    }
+
+    public void setSpeed(int speed) {
+        this.speed = speed;
     }
 
     private void removeDeadAnimals() {
