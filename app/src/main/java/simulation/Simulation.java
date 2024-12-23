@@ -63,6 +63,7 @@ public class Simulation implements Runnable {
             growGrass();
 
             day++;
+            map.notifyMapChanged();
 
             try {
                 Thread.sleep(1000 / speed);

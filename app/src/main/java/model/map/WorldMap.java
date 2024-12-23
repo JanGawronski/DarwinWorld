@@ -32,7 +32,6 @@ public class WorldMap implements MoveConverter {
         if (animals.get(position).isEmpty() && !grasses.containsKey(position))
             emptySquareCount--;
         animals.get(position).add(animal);
-        notifyMapChanged(animal.getPosition());
     }
 
     public void remove(Animal animal) {
@@ -42,7 +41,6 @@ public class WorldMap implements MoveConverter {
         animals.get(position).remove(animal);
         if (animals.get(position).isEmpty() && !grasses.containsKey(position))
             emptySquareCount++;
-        notifyMapChanged(animal.getPosition());
     }
 
     public void place(Grass grass) {
@@ -52,7 +50,6 @@ public class WorldMap implements MoveConverter {
         grasses.put(position, grass);
         if (!animals.containsKey(position) || animals.get(position).isEmpty())
             emptySquareCount--;
-        notifyMapChanged(grass.getPosition());
     }
 
     public void remove(Grass grass) {
@@ -62,7 +59,6 @@ public class WorldMap implements MoveConverter {
         grasses.remove(position);
         if (!animals.containsKey(position) || animals.get(position).isEmpty())
             emptySquareCount++;
-        notifyMapChanged(grass.getPosition());
     }
 
     public void addListener(MapChangeListener listener) {
@@ -75,9 +71,9 @@ public class WorldMap implements MoveConverter {
     }
 
 
-    protected void notifyMapChanged(Vector2d position) {
+    public void notifyMapChanged() {
         for (MapChangeListener listener : listeners) {
-            listener.mapChanged(this, position);
+            listener.mapChanged(this);
         }
     }
 

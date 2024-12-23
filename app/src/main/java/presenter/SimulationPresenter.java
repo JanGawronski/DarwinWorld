@@ -1,5 +1,7 @@
 package presenter;
 
+import java.util.HashMap;
+
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.layout.ColumnConstraints;
@@ -23,8 +25,8 @@ public class SimulationPresenter implements MapChangeListener {
     private Simulation simulation;
     @FXML
     private GridPane mapGrid;
-    private Circle[][] circles;
-    private Rectangle[][] squares;
+    private HashMap<Vector2d, Circle> circles = new HashMap<>();
+    private HashMap<Vector2d, Rectangle> squares = new HashMap<>();
 
     @FXML
     private Label day;
@@ -43,10 +45,6 @@ public class SimulationPresenter implements MapChangeListener {
 
 
     private void drawGrid(WorldMap map) {
-        circles = new Circle[map.getWidth()][map.getHeight()];
-        squares = new Rectangle[map.getWidth()][map.getHeight()];
-
-        
         mapGrid.getColumnConstraints().clear();
         mapGrid.getRowConstraints().clear();
 
@@ -86,18 +84,21 @@ public class SimulationPresenter implements MapChangeListener {
 
                 cell.getChildren().addAll(square, circle);
                 mapGrid.add(cell, i, j);
-                circles[i][j] = circle;
-                squares[i][j] = square;
+                Vector2d position = new Vector2d(i, j);
+                circles.put(position, circle);
+                squares.put(position, square);
 
             }
         }
     }
 
     @Override
-    public void mapChanged(WorldMap map, Vector2d position) {
+    public void mapChanged(WorldMap map) {
         Platform.runLater(() -> {
-            squares[position.x()][position.y()].setVisible(map.isGrassOn(position));
-            circles[position.x()][position.y()].setVisible(map.getAnimalsAt(position).size() > 0);
+            for (Vector2d position : circles.keySet()) {
+                squares.get(position).setVisible(map.isGrassOn(position));
+                circles.get(position).setVisible(map.getAnimalsAt(position).size() > 0);
+            }
 
             SimulationStats simulationStats = simulation.getStats();
             day.setText(String.valueOf(simulationStats.day()));
