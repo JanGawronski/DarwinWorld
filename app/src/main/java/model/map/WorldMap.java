@@ -14,18 +14,22 @@ public class WorldMap implements MoveConverter {
     private final List<MapChangeListener> listeners = new ArrayList<>();
     private final Vector2d lowerLeft;
     private final Vector2d upperRight;
+    private int emptySquareCount;
 
     public WorldMap(int height, int width) {
         if (width <= 0 || height <= 0)
             throw new IllegalArgumentException("Map dimensions must be positive");
         this.lowerLeft = new Vector2d(0, 0);
         this.upperRight = new Vector2d(width - 1, height - 1);
+        this.emptySquareCount = width * height;
     }
 
     public void place(Animal animal) {
         Vector2d position = animal.getPosition();
         if (!animals.containsKey(position))
             animals.put(position, new HashSet<Animal>());
+        if (animals.get(position).isEmpty() && !grasses.containsKey(position))
+            emptySquareCount--;
         animals.get(position).add(animal);
         notifyMapChanged("Animal placed at " + animal.getPosition());
     }
@@ -35,6 +39,8 @@ public class WorldMap implements MoveConverter {
         if (!animals.containsKey(position) || !animals.get(position).contains(animal))
             throw new IllegalArgumentException("This animal is not present at " + position);
         animals.get(position).remove(animal);
+        if (animals.get(position).isEmpty() && !grasses.containsKey(position))
+            emptySquareCount++;
         notifyMapChanged("Animal removed from " + animal.getPosition());
     }
 
@@ -43,6 +49,8 @@ public class WorldMap implements MoveConverter {
         if (grasses.containsKey(position))
             throw new IllegalArgumentException("Grass is already present at " + position);
         grasses.put(position, grass);
+        if (!animals.containsKey(position) || animals.get(position).isEmpty())
+            emptySquareCount--;
         notifyMapChanged("Grass placed at " + grass.getPosition());
     }
 
@@ -51,6 +59,8 @@ public class WorldMap implements MoveConverter {
         if (!grasses.containsKey(position))
             throw new IllegalArgumentException("There is no grass at " + position);
         grasses.remove(position);
+        if (!animals.containsKey(position) || animals.get(position).isEmpty())
+            emptySquareCount++;
         notifyMapChanged("Grass removed from " + grass.getPosition());
     }
 
@@ -106,6 +116,10 @@ public class WorldMap implements MoveConverter {
 
     public int getHeight() {
         return upperRight.y() + 1;
+    }
+
+    public int getEmptySquareCount() {
+        return emptySquareCount;
     }
 
 }

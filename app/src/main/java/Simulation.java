@@ -149,7 +149,7 @@ public class Simulation implements Runnable {
     public void getStats() { // to są wszystkie potrzebne statystyki
         int animalCount = animals.size();
         int grassCount = map.getGrasses().size();
-        int emptySquareCount; //TODO
+        int emptySquareCount = map.getEmptySquareCount();
         Map<Genome, Integer> genomeIntegerHashMap = Collections.unmodifiableMap(genomePopularity);
         double averageEnergy = 0;
         double averageLifeSpan = 0;
