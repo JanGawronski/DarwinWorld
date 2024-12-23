@@ -12,6 +12,7 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import model.AnimalConfigData;
 import model.Vector2d;
@@ -27,6 +28,12 @@ public class SimulationPresenter implements MapChangeListener {
     private GridPane mapGrid;
     private HashMap<Vector2d, Circle> circles = new HashMap<>();
     private HashMap<Vector2d, Rectangle> squares = new HashMap<>();
+
+    @FXML
+    private Button resumeButton;
+
+    @FXML
+    private Button stopButton;
 
     @FXML
     private Label day;
@@ -122,8 +129,22 @@ public class SimulationPresenter implements MapChangeListener {
         simulation.setSpeed(10);
     }
 
+    @FXML
+    public void resumeSimulation() {
+        simulation.start();
+        resumeButton.setVisible(false);
+        resumeButton.setManaged(false);
+        stopButton.setVisible(true);
+        stopButton.setManaged(true);
+    }
+
+    @FXML
     public void stopSimulation() {
         simulation.stop();
+        stopButton.setVisible(false);
+        stopButton.setManaged(false);
+        resumeButton.setVisible(true);
+        resumeButton.setManaged(true);
     }
 
 }

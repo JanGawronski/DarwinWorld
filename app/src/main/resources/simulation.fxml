@@ -14,6 +14,8 @@
       minHeight="550.0" minWidth="850.0"
       fx:controller="presenter.SimulationPresenter">
     <VBox spacing="10" minWidth="300">
+        <Button fx:id="resumeButton" text="Resume simulation" onAction="#resumeSimulation" visible="false" managed="false"/>
+        <Button fx:id="stopButton" text="Stop simulation" onAction="#stopSimulation"/>
         <HBox>
             <Label text="Day: "/>
             <Label fx:id="day"/>
