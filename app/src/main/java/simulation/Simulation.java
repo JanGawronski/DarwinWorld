@@ -1,3 +1,4 @@
+package simulation;
 import model.AnimalConfigData;
 import model.Vector2d;
 import model.elements.animal.Animal;
@@ -11,18 +12,19 @@ import model.map.WorldMap;
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 
 public class Simulation implements Runnable {
-    private final HashSet<Animal> animals = new HashSet<>();
-    private final HashSet<Animal> deadAnimals = new HashSet<>();
+    private final Set<Animal> animals = Collections.newSetFromMap(new ConcurrentHashMap<Animal, Boolean>());
+    private final Set<Animal> deadAnimals = Collections.newSetFromMap(new ConcurrentHashMap<Animal, Boolean>());
     private final WorldMap map;
     private final GrassGenerator grassGenerator;
     //private final AnimalConfigData animalConfig;
     private final int grassGrowthRate;
-    private final HashMap<Genome, Integer> genomePopularity = new HashMap<>();
+    private final ConcurrentHashMap<Genome, Integer> genomePopularity = new ConcurrentHashMap<>();
     private int day = 0;
     private ExecutorService executor;
     private volatile int speed = 1;
@@ -146,26 +148,15 @@ public class Simulation implements Runnable {
             map.place(grass);
     }
 
-    public void getStats() { // to są wszystkie potrzebne statystyki
+    public SimulationStats getStats() { // to są wszystkie potrzebne statystyki
         int animalCount = animals.size();
         int grassCount = map.getGrasses().size();
         int emptySquareCount = map.getEmptySquareCount();
         Map<Genome, Integer> genomeIntegerHashMap = Collections.unmodifiableMap(genomePopularity);
-        double averageEnergy = 0;
-        double averageLifeSpan = 0;
-        double averageLivingKids = 0;
-        for (Animal animal : animals) {
-            AnimalStats stats = animal.getStats();
-            averageEnergy += stats.energy();
-            averageLivingKids += stats.children();
-        }
-        for (Animal animal : deadAnimals) {
-            AnimalStats stats = animal.getStats();
-            averageLifeSpan += stats.lifeSpan();
-        }
-        averageEnergy /= animalCount;
-        averageLifeSpan /= deadAnimals.size();
-        averageLivingKids /= animalCount;
+        double averageEnergy = animals.stream().mapToDouble(Animal::getEnergy).average().orElse(0);
+        double averageLifeSpan = deadAnimals.stream().mapToDouble(Animal::getLifeSpan).average().orElse(0);
+        double averageChildrenCount = animals.stream().mapToDouble(Animal::getChildrenCount).average().orElse(0);
+        return new SimulationStats(day, animalCount, grassCount, emptySquareCount, genomeIntegerHashMap, averageEnergy, averageLifeSpan, averageChildrenCount);
     }
 
     public List<Vector2d> getPreferredPositions() {

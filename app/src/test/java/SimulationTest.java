@@ -2,6 +2,7 @@ import org.junit.jupiter.api.Test;
 
 import model.AnimalConfigData;
 import model.map.WorldMap;
+import simulation.Simulation;
 import model.elements.grass.generators.ForestedEquators;
 import model.elements.animal.Animal;
 

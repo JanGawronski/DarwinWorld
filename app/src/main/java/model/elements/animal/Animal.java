@@ -127,6 +127,14 @@ public class Animal implements WorldElement {
         return orientation.toString();
     }
 
+    public int getLifeSpan() {
+        return liveSpan;
+    }
+
+    public int getChildrenCount() {
+        return childCount;
+    }
+
     private void addDescendant(int breedNumber) {
         if (latestBreedId != null && breedNumber == latestBreedId)
             return;

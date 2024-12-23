@@ -7,10 +7,11 @@ import model.elements.animal.Animal;
 import model.elements.grass.Grass;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class WorldMap implements MoveConverter {
-    private final HashMap<Vector2d, HashSet<Animal>> animals = new HashMap<>();
-    private final HashMap<Vector2d, Grass> grasses = new HashMap<>();
+    private final ConcurrentHashMap<Vector2d, HashSet<Animal>> animals = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<Vector2d, Grass> grasses = new ConcurrentHashMap<>();
     private final List<MapChangeListener> listeners = new ArrayList<>();
     private final Vector2d lowerLeft;
     private final Vector2d upperRight;
@@ -31,7 +32,7 @@ public class WorldMap implements MoveConverter {
         if (animals.get(position).isEmpty() && !grasses.containsKey(position))
             emptySquareCount--;
         animals.get(position).add(animal);
-        notifyMapChanged("Animal placed at " + animal.getPosition());
+        notifyMapChanged(animal.getPosition());
     }
 
     public void remove(Animal animal) {
@@ -41,7 +42,7 @@ public class WorldMap implements MoveConverter {
         animals.get(position).remove(animal);
         if (animals.get(position).isEmpty() && !grasses.containsKey(position))
             emptySquareCount++;
-        notifyMapChanged("Animal removed from " + animal.getPosition());
+        notifyMapChanged(animal.getPosition());
     }
 
     public void place(Grass grass) {
@@ -51,7 +52,7 @@ public class WorldMap implements MoveConverter {
         grasses.put(position, grass);
         if (!animals.containsKey(position) || animals.get(position).isEmpty())
             emptySquareCount--;
-        notifyMapChanged("Grass placed at " + grass.getPosition());
+        notifyMapChanged(grass.getPosition());
     }
 
     public void remove(Grass grass) {
@@ -61,7 +62,7 @@ public class WorldMap implements MoveConverter {
         grasses.remove(position);
         if (!animals.containsKey(position) || animals.get(position).isEmpty())
             emptySquareCount++;
-        notifyMapChanged("Grass removed from " + grass.getPosition());
+        notifyMapChanged(grass.getPosition());
     }
 
     public void addListener(MapChangeListener listener) {
@@ -74,9 +75,9 @@ public class WorldMap implements MoveConverter {
     }
 
 
-    protected void notifyMapChanged(String message) {
+    protected void notifyMapChanged(Vector2d position) {
         for (MapChangeListener listener : listeners) {
-            listener.mapChanged(this, message);
+            listener.mapChanged(this, position);
         }
     }
 
@@ -108,6 +109,10 @@ public class WorldMap implements MoveConverter {
 
     public Set<Vector2d> getGrassesPositions() {
         return Collections.unmodifiableSet(grasses.keySet());
+    }
+
+    public boolean isGrassOn(Vector2d position) {
+        return grasses.containsKey(position);
     }
 
     public int getWidth() {
