@@ -128,10 +128,10 @@ public class Simulation implements Runnable {
         Map<Vector2d, HashSet<Animal>> animalsByPosition = map.getAnimalsMap();
         for (HashSet<Animal> positionAnimals : animalsByPosition.values()) {
             if (positionAnimals.size() >= 2) {
-                List<Animal> sortedAnimals = new ArrayList<>(positionAnimals);
-                Collections.sort(sortedAnimals);
+                Animal first = Collections.max(positionAnimals);
+                Animal second = Collections.max(positionAnimals.stream().filter(animal -> animal != first).toList());
                 try {
-                    Animal child = Animal.breed(sortedAnimals.get(sortedAnimals.size() - 1), sortedAnimals.get(sortedAnimals.size() - 2), this.animals.size() + this.deadAnimals.size());
+                    Animal child = Animal.breed(first, second, this.animals.size() + this.deadAnimals.size());
                     animals.add(child);
                     genomePopularity.merge(child.getGenome(), 1, Integer::sum);
                     map.place(child);
