@@ -8,6 +8,8 @@ import model.map.MoveConverter;
 import model.map.WorldMap;
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
@@ -16,7 +18,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class AnimalTest {
 
     @Test
-    public void sorted() {
+    public void comparator() {
         AnimalConfigData config = new AnimalConfigData(1, 1, 1, true, 1, 1, 1);
         Vector2d position = new Vector2d(0, 0);
         Animal animal1 = new Animal(config, 20, position);
@@ -34,8 +36,13 @@ public class AnimalTest {
         WorldMap map = new WorldMap(10, 10);
         animal2.move(map);
 
-
-        assertEquals(List.of(animal1, animal2, animal3, animal4, animal5), Animal.sorted(Set.of(animal1, animal2, animal3, animal4, animal5)));
+        List<Animal> animalList = List.of(animal1, animal2, animal3, animal4, animal5);
+        List<Animal> sortedAnimalList = new ArrayList<>(animalList);
+        Collections.sort(sortedAnimalList);
+        assertEquals(List.of(animal1, animal2, animal3, animal4, animal5), sortedAnimalList.reversed());
+        
+        Animal animal = Collections.max(Set.of(animal1, animal2, animal3, animal4, animal5));
+        assertEquals(animal, animal1);
     }
 
     @Test

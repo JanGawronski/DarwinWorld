@@ -118,7 +118,7 @@ public class Simulation implements Runnable {
             Set<Animal> animalsOnGrass = map.getAnimalsAt(grass.getPosition());
             if (animalsOnGrass.isEmpty())
                 continue;
-            Animal animal = Animal.sorted(animalsOnGrass).getFirst();
+            Animal animal = Collections.max(animalsOnGrass);
             animal.eat();
             map.remove(grass);
         }
@@ -128,9 +128,10 @@ public class Simulation implements Runnable {
         Map<Vector2d, HashSet<Animal>> animalsByPosition = map.getAnimalsMap();
         for (HashSet<Animal> positionAnimals : animalsByPosition.values()) {
             if (positionAnimals.size() >= 2) {
-                List<Animal> sortedAnimals = Animal.sorted(positionAnimals);
+                List<Animal> sortedAnimals = new ArrayList<>(positionAnimals);
+                Collections.sort(sortedAnimals);
                 try {
-                    Animal child = Animal.breed(sortedAnimals.get(0), sortedAnimals.get(1), this.animals.size() + this.deadAnimals.size());
+                    Animal child = Animal.breed(sortedAnimals.get(sortedAnimals.size() - 1), sortedAnimals.get(sortedAnimals.size() - 2), this.animals.size() + this.deadAnimals.size());
                     animals.add(child);
                     genomePopularity.merge(child.getGenome(), 1, Integer::sum);
                     map.place(child);

@@ -14,7 +14,7 @@ import java.util.Optional;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 
-public class Animal implements WorldElement {
+public class Animal implements WorldElement, Comparable<Animal> {
     private final AnimalConfigData config;
     private final Genome genome;
     private final Pair<Animal, Animal> parents;
@@ -72,13 +72,13 @@ public class Animal implements WorldElement {
         return new Animal(setup, 2 * setup.birthEnergy(), childGenome, father.position, new Pair<>(mother, father));
     }
 
-    public static List<Animal> sorted(Collection<Animal> animals) {
-        return animals.stream()
-                .sorted(Comparator.comparingInt((Animal animal) -> animal.energy)
-                        .thenComparingInt(animal -> animal.liveSpan)
-                        .thenComparingInt(animal -> animal.childCount)
-                        .thenComparingInt(animal -> ThreadLocalRandom.current().nextInt()))
-                .collect(Collectors.toList()).reversed();
+    @Override
+    public int compareTo(Animal other) {
+        return Comparator.comparingInt((Animal animal) -> animal.energy)
+                .thenComparingInt(animal -> animal.liveSpan)
+                .thenComparingInt(animal -> animal.childCount)
+                .thenComparingInt(animal -> ThreadLocalRandom.current().nextInt())
+                .compare(this, other);
     }
 
     public void eat() {
