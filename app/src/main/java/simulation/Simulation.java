@@ -2,7 +2,6 @@ package simulation;
 import model.AnimalConfigData;
 import model.Vector2d;
 import model.elements.animal.Animal;
-import model.elements.animal.AnimalStats;
 import model.elements.animal.Genome;
 import model.elements.animal.ParentNotSaturatedException;
 import model.elements.grass.Grass;
@@ -22,7 +21,6 @@ public class Simulation implements Runnable {
     private final Set<Animal> deadAnimals = Collections.newSetFromMap(new ConcurrentHashMap<Animal, Boolean>());
     private final WorldMap map;
     private final GrassGenerator grassGenerator;
-    //private final AnimalConfigData animalConfig;
     private final int grassGrowthRate;
     private final ConcurrentHashMap<Genome, Integer> genomePopularity = new ConcurrentHashMap<>();
     private int day = 0;
@@ -34,7 +32,6 @@ public class Simulation implements Runnable {
         this.map = map;
         this.grassGenerator = grassGenerator;
         this.grassGrowthRate = grassGrowthRate;
-        //this.animalConfig = animalConfigData;
 
         if (initialGrassCount > map.getHeight() * map.getWidth())
             throw new IllegalArgumentException("Initial grass count cannot exceed map size");
@@ -150,7 +147,7 @@ public class Simulation implements Runnable {
             map.place(grass);
     }
 
-    public SimulationStats getStats() { // to są wszystkie potrzebne statystyki
+    public SimulationStats getStats() {
         int animalCount = animals.size();
         int grassCount = map.getGrasses().size();
         int emptySquareCount = map.getEmptySquareCount();

@@ -1,19 +1,24 @@
 package presenter;
 
 import java.util.HashMap;
+import java.util.Collections;
+import java.util.Set;
 
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.RowConstraints;
 import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+
 import model.AnimalConfigData;
 import model.Vector2d;
 import model.map.MapChangeListener;
@@ -21,9 +26,13 @@ import model.map.WorldMap;
 import model.elements.grass.generators.ForestedEquators;
 import simulation.Simulation;
 import simulation.SimulationStats;
+import model.elements.animal.Animal;
+import model.elements.animal.AnimalStats;
 
 public class SimulationPresenter implements MapChangeListener {
     private Simulation simulation;
+    private WorldMap map;
+    private Animal followedAnimal;
     @FXML
     private GridPane mapGrid;
     private HashMap<Vector2d, Circle> circles = new HashMap<>();
@@ -49,6 +58,26 @@ public class SimulationPresenter implements MapChangeListener {
     private Label averageLifespan;
     @FXML
     private Label averageChildrenCount;
+    @FXML
+    private VBox followedAnimalBox;
+    @FXML
+    private Label followedAnimalGenome;
+    @FXML
+    private Label followedAnimalActiveGene;
+    @FXML
+    private Label followedAnimalEnergy;
+    @FXML
+    private Label followedAnimalGrassEaten;
+    @FXML
+    private Label followedAnimalChildren;
+    @FXML
+    private Label followedAnimalDescendants;
+    @FXML
+    private Label followedAnimalDaysAlive;
+    @FXML
+    private HBox followedAnimalDayOfDeathBox;
+    @FXML
+    private Label followedAnimalDayOfDeath;
 
 
     private void drawGrid(WorldMap map) {
@@ -115,11 +144,36 @@ public class SimulationPresenter implements MapChangeListener {
             averageEnergy.setText(String.format("%.2f", simulationStats.averageEnergy()));
             averageLifespan.setText(String.format("%.2f", simulationStats.averageLifeSpan()));
             averageChildrenCount.setText(String.format("%.2f", simulationStats.averageChildrenCount()));
+
+            if (followedAnimal == null) {
+                followedAnimalBox.setVisible(false);
+                followedAnimalBox.setManaged(false);
+            } else {
+                followedAnimalBox.setVisible(true);
+                followedAnimalBox.setManaged(true);
+                AnimalStats animalStats = followedAnimal.getStats();
+                followedAnimalGenome.setText(animalStats.genome().toString());
+                followedAnimalActiveGene.setText(String.valueOf(animalStats.activeGene()));
+                followedAnimalEnergy.setText(String.valueOf(animalStats.energy()));
+                followedAnimalGrassEaten.setText(String.valueOf(animalStats.grassEaten()));
+                followedAnimalChildren.setText(String.valueOf(animalStats.children()));
+                followedAnimalDescendants.setText(String.valueOf(animalStats.descendants()));
+                followedAnimalDaysAlive.setText(String.valueOf(animalStats.lifeSpan()));
+                if (followedAnimal.isAlive()) {
+                    followedAnimalDayOfDeathBox.setVisible(false);
+                    followedAnimalDayOfDeathBox.setManaged(false);
+                } else {
+                    followedAnimalDayOfDeathBox.setVisible(true);
+                    followedAnimalDayOfDeathBox.setManaged(true);
+                    followedAnimalDayOfDeath.setText(String.valueOf(animalStats.deathDay().get()));
+                }
+            }
         });
     }    
 
     public void startSimulation() {
         WorldMap map = new WorldMap(100, 100);
+        this.map = map;
         map.addListener(this);
         drawGrid(map);
         AnimalConfigData animalConfigData = new AnimalConfigData(10, 5, 5, true, 10, 1, 10);
@@ -136,6 +190,8 @@ public class SimulationPresenter implements MapChangeListener {
         resumeButton.setManaged(false);
         stopButton.setVisible(true);
         stopButton.setManaged(true);
+        for (Circle circle : circles.values())
+            circle.setOnMouseClicked(null);
     }
 
     @FXML
@@ -145,6 +201,12 @@ public class SimulationPresenter implements MapChangeListener {
         stopButton.setManaged(false);
         resumeButton.setVisible(true);
         resumeButton.setManaged(true);
+        for (Vector2d position : circles.keySet())
+            circles.get(position).setOnMouseClicked(e -> {
+                Set<Animal> animals = map.getAnimalsAt(position);
+                followedAnimal = animals.isEmpty() ? null : Collections.max(animals);
+                mapChanged(map);
+            });
     }
 
 }

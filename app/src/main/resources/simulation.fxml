@@ -44,7 +44,42 @@
             <Label text="Average number of children: "/>
             <Label fx:id="averageChildrenCount"/>
         </HBox>
-        
+       <VBox fx:id="followedAnimalBox" visible="false" managed="false">
+            <Label text="Followed animal: "/>
+            <HBox>
+                <Label text="Genome: "/>
+                <Label fx:id="followedAnimalGenome"/>
+            </HBox>
+            <HBox>
+                <Label text="Active gene: "/>
+                <Label fx:id="followedAnimalActiveGene"/>
+            </HBox>
+            <HBox>
+                <Label text="Energy: "/>
+                <Label fx:id="followedAnimalEnergy"/>
+            </HBox>
+            <HBox>
+                <Label text="Grass eaten: "/>
+                <Label fx:id="followedAnimalGrassEaten"/>
+            </HBox>
+            <HBox>
+                <Label text="Children: "/>
+                <Label fx:id="followedAnimalChildren"/>
+            </HBox>
+            <HBox>
+                <Label text="Descendants: "/>
+                <Label fx:id="followedAnimalDescendants"/>
+            </HBox>
+            <HBox>
+                <Label text="Days alive: "/>
+                <Label fx:id="followedAnimalDaysAlive"/>
+            </HBox>
+            <HBox fx:id="followedAnimalDayOfDeathBox" visible="false" managed="false">
+                <Label text="Day of death: "/>
+                <Label fx:id="followedAnimalDayOfDeath"/>
+            </HBox>
+        </VBox>
+
     </VBox>
     <GridPane fx:id="mapGrid" gridLinesVisible="true" HBox.hgrow="ALWAYS" VBox.vgrow="ALWAYS">
         <columnConstraints>
