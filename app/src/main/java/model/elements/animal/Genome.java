@@ -49,9 +49,30 @@ public class Genome {
         return new Genome(array);
     }
 
+    public static Character geneToChar(int gene) {
+        return switch (gene) {
+            case 0 -> '↑';
+            case 1 -> '↗';
+            case 2 -> '→';
+            case 3 -> '↘';
+            case 4 -> '↓';
+            case 5 -> '↙';
+            case 6 -> '←';
+            case 7 -> '↖';
+            default -> throw new IllegalArgumentException("Gene must be in the range [0-7]");
+        };
+    }
+
     @Override
     public String toString() {
-        return "Genome " + Arrays.toString(genes);
+        if (genes == null || genes.length == 0)
+            return "No genes available";
+        StringBuilder sb = new StringBuilder();
+        for (int gene : genes)
+            sb.append(geneToChar(gene)).append(' ');
+        if (sb.length() > 0)
+            sb.setLength(sb.length() - 1);
+        return sb.toString();
     }
 
     @Override

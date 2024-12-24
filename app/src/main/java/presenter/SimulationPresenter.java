@@ -1,8 +1,10 @@
 package presenter;
 
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Collections;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import javafx.application.Platform;
 import javafx.fxml.FXML;
@@ -16,8 +18,10 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.text.TextFlow;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.text.Text;
 
 import model.AnimalConfigData;
 import model.Vector2d;
@@ -28,22 +32,20 @@ import simulation.Simulation;
 import simulation.SimulationStats;
 import model.elements.animal.Animal;
 import model.elements.animal.AnimalStats;
+import model.elements.animal.Genome;
 
 public class SimulationPresenter implements MapChangeListener {
     private Simulation simulation;
     private WorldMap map;
+    private HashMap<Vector2d, Circle> circles = new HashMap<>();
+    private HashMap<Vector2d, Rectangle> squares = new HashMap<>();
     private Animal followedAnimal;
     @FXML
     private GridPane mapGrid;
-    private HashMap<Vector2d, Circle> circles = new HashMap<>();
-    private HashMap<Vector2d, Rectangle> squares = new HashMap<>();
-
     @FXML
     private Button resumeButton;
-
     @FXML
     private Button stopButton;
-
     @FXML
     private Label day;
     @FXML
@@ -59,11 +61,13 @@ public class SimulationPresenter implements MapChangeListener {
     @FXML
     private Label averageChildrenCount;
     @FXML
+    private Label topGenomes;
+    @FXML
+    private Label notFollowingAnimal;
+    @FXML
     private VBox followedAnimalBox;
     @FXML
     private Label followedAnimalGenome;
-    @FXML
-    private Label followedAnimalActiveGene;
     @FXML
     private Label followedAnimalEnergy;
     @FXML
@@ -79,7 +83,6 @@ public class SimulationPresenter implements MapChangeListener {
     @FXML
     private Label followedAnimalDayOfDeath;
 
-
     private void drawGrid(WorldMap map) {
         mapGrid.getColumnConstraints().clear();
         mapGrid.getRowConstraints().clear();
@@ -88,7 +91,7 @@ public class SimulationPresenter implements MapChangeListener {
             ColumnConstraints colConst = new ColumnConstraints();
             colConst.setPercentWidth(100.0 / map.getWidth());
             colConst.setHgrow(Priority.ALWAYS);
-            colConst.setMinWidth(10);
+            colConst.setMinWidth(1);
             mapGrid.getColumnConstraints().add(colConst);
         }
 
@@ -96,10 +99,9 @@ public class SimulationPresenter implements MapChangeListener {
             RowConstraints rowConst = new RowConstraints();
             rowConst.setPercentHeight(100.0 / map.getHeight());
             rowConst.setVgrow(Priority.ALWAYS);
-            rowConst.setMinHeight(10);
+            rowConst.setMinHeight(1);
             mapGrid.getRowConstraints().add(rowConst);
         }
-
 
         for (int i = 0; i < map.getWidth(); i++) {
             for (int j = 0; j < map.getHeight(); j++) {
@@ -107,9 +109,9 @@ public class SimulationPresenter implements MapChangeListener {
                 Rectangle square = new Rectangle();
                 square.setFill(Color.GREEN);
                 square.setVisible(false);
-                cell.setMinWidth(10);
-                cell.setMinHeight(10);
-                
+                cell.setMinWidth(1);
+                cell.setMinHeight(1);
+
                 Circle circle = new Circle();
                 circle.setFill(Color.BLACK);
                 circle.setVisible(false);
@@ -144,16 +146,32 @@ public class SimulationPresenter implements MapChangeListener {
             averageEnergy.setText(String.format("%.2f", simulationStats.averageEnergy()));
             averageLifespan.setText(String.format("%.2f", simulationStats.averageLifeSpan()));
             averageChildrenCount.setText(String.format("%.2f", simulationStats.averageChildrenCount()));
-
+            topGenomes.setText(simulationStats.genomePopularity().entrySet().stream()
+                    .sorted(Map.Entry.<Genome, Integer>comparingByValue().reversed())
+                    .limit(10)
+                    .map(entry -> entry.getKey() + ": " + entry.getValue())
+                    .collect(Collectors.joining("\n")));
             if (followedAnimal == null) {
                 followedAnimalBox.setVisible(false);
                 followedAnimalBox.setManaged(false);
+                notFollowingAnimal.setVisible(true);
+                notFollowingAnimal.setManaged(true);
             } else {
                 followedAnimalBox.setVisible(true);
                 followedAnimalBox.setManaged(true);
+                notFollowingAnimal.setVisible(false);
+                notFollowingAnimal.setManaged(false);
+
                 AnimalStats animalStats = followedAnimal.getStats();
-                followedAnimalGenome.setText(animalStats.genome().toString());
-                followedAnimalActiveGene.setText(String.valueOf(animalStats.activeGene()));
+                String text = animalStats.genome().toString();
+                Text before = new Text(text.substring(0, 2 * animalStats.activeGene()));
+                Text colored = new Text(String.valueOf(text.charAt(2 * animalStats.activeGene())));
+                colored.setFill(Color.RED);
+                Text after = new Text(text.substring(2 * animalStats.activeGene() + 1));
+                TextFlow textFlow = new TextFlow();
+                textFlow.getChildren().addAll(before, colored, after);
+                followedAnimalGenome.setGraphic(textFlow);
+
                 followedAnimalEnergy.setText(String.valueOf(animalStats.energy()));
                 followedAnimalGrassEaten.setText(String.valueOf(animalStats.grassEaten()));
                 followedAnimalChildren.setText(String.valueOf(animalStats.children()));
@@ -169,14 +187,14 @@ public class SimulationPresenter implements MapChangeListener {
                 }
             }
         });
-    }    
+    }
 
     public void startSimulation() {
         WorldMap map = new WorldMap(100, 100);
         this.map = map;
         map.addListener(this);
         drawGrid(map);
-        AnimalConfigData animalConfigData = new AnimalConfigData(10, 5, 5, true, 10, 1, 10);
+        AnimalConfigData animalConfigData = new AnimalConfigData(10, 5, 5, true, 4, 1, 4);
         Simulation simulation = new Simulation(map, animalConfigData, new ForestedEquators(map), 100, 100, 100, 10);
         this.simulation = simulation;
         simulation.start();
