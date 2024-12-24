@@ -83,6 +83,44 @@ public class SimulationPresenter implements MapChangeListener {
     @FXML
     private Label followedAnimalDayOfDeath;
 
+    public void startSimulation() {
+        WorldMap map = new WorldMap(100, 100);
+        this.map = map;
+        map.addListener(this);
+        drawGrid(map);
+        AnimalConfigData animalConfigData = new AnimalConfigData(10, 5, 5, true, 4, 1, 4);
+        Simulation simulation = new Simulation(map, animalConfigData, new ForestedEquators(map), 100, 100, 100, 10);
+        this.simulation = simulation;
+        simulation.start();
+        simulation.setSpeed(10);
+    }
+
+    @FXML
+    public void resumeSimulation() {
+        simulation.start();
+        resumeButton.setVisible(false);
+        resumeButton.setManaged(false);
+        stopButton.setVisible(true);
+        stopButton.setManaged(true);
+        for (Circle circle : circles.values())
+            circle.setOnMouseClicked(null);
+    }
+
+    @FXML
+    public void stopSimulation() {
+        simulation.stop();
+        stopButton.setVisible(false);
+        stopButton.setManaged(false);
+        resumeButton.setVisible(true);
+        resumeButton.setManaged(true);
+        for (Vector2d position : circles.keySet())
+            circles.get(position).setOnMouseClicked(e -> {
+                Set<Animal> animals = map.getAnimalsAt(position);
+                followedAnimal = animals.isEmpty() ? null : Collections.max(animals);
+                updateAnimalStats();
+            });
+    }
+
     private void drawGrid(WorldMap map) {
         mapGrid.getColumnConstraints().clear();
         mapGrid.getRowConstraints().clear();
@@ -137,94 +175,62 @@ public class SimulationPresenter implements MapChangeListener {
                 squares.get(position).setVisible(map.isGrassOn(position));
                 circles.get(position).setVisible(map.getAnimalsAt(position).size() > 0);
             }
-
-            SimulationStats simulationStats = simulation.getStats();
-            day.setText(String.valueOf(simulationStats.day()));
-            animalsCount.setText(String.valueOf(simulationStats.animalsCount()));
-            grassCount.setText(String.valueOf(simulationStats.grassCount()));
-            emptySquareCount.setText(String.valueOf(simulationStats.emptySquareCount()));
-            averageEnergy.setText(String.format("%.2f", simulationStats.averageEnergy()));
-            averageLifespan.setText(String.format("%.2f", simulationStats.averageLifeSpan()));
-            averageChildrenCount.setText(String.format("%.2f", simulationStats.averageChildrenCount()));
-            topGenomes.setText(simulationStats.genomePopularity().entrySet().stream()
-                    .sorted(Map.Entry.<Genome, Integer>comparingByValue().reversed())
-                    .limit(10)
-                    .map(entry -> entry.getKey() + ": " + entry.getValue())
-                    .collect(Collectors.joining("\n")));
-            if (followedAnimal == null) {
-                followedAnimalBox.setVisible(false);
-                followedAnimalBox.setManaged(false);
-                notFollowingAnimal.setVisible(true);
-                notFollowingAnimal.setManaged(true);
-            } else {
-                followedAnimalBox.setVisible(true);
-                followedAnimalBox.setManaged(true);
-                notFollowingAnimal.setVisible(false);
-                notFollowingAnimal.setManaged(false);
-
-                AnimalStats animalStats = followedAnimal.getStats();
-                String text = animalStats.genome().toString();
-                Text before = new Text(text.substring(0, 2 * animalStats.activeGene()));
-                Text colored = new Text(String.valueOf(text.charAt(2 * animalStats.activeGene())));
-                colored.setFill(Color.RED);
-                Text after = new Text(text.substring(2 * animalStats.activeGene() + 1));
-                TextFlow textFlow = new TextFlow();
-                textFlow.getChildren().addAll(before, colored, after);
-                followedAnimalGenome.setGraphic(textFlow);
-
-                followedAnimalEnergy.setText(String.valueOf(animalStats.energy()));
-                followedAnimalGrassEaten.setText(String.valueOf(animalStats.grassEaten()));
-                followedAnimalChildren.setText(String.valueOf(animalStats.children()));
-                followedAnimalDescendants.setText(String.valueOf(animalStats.descendants()));
-                followedAnimalDaysAlive.setText(String.valueOf(animalStats.lifeSpan()));
-                if (followedAnimal.isAlive()) {
-                    followedAnimalDayOfDeathBox.setVisible(false);
-                    followedAnimalDayOfDeathBox.setManaged(false);
-                } else {
-                    followedAnimalDayOfDeathBox.setVisible(true);
-                    followedAnimalDayOfDeathBox.setManaged(true);
-                    followedAnimalDayOfDeath.setText(String.valueOf(animalStats.deathDay().get()));
-                }
-            }
+            updateSimulationStats();
+            updateAnimalStats();
         });
     }
 
-    public void startSimulation() {
-        WorldMap map = new WorldMap(100, 100);
-        this.map = map;
-        map.addListener(this);
-        drawGrid(map);
-        AnimalConfigData animalConfigData = new AnimalConfigData(10, 5, 5, true, 4, 1, 4);
-        Simulation simulation = new Simulation(map, animalConfigData, new ForestedEquators(map), 100, 100, 100, 10);
-        this.simulation = simulation;
-        simulation.start();
-        simulation.setSpeed(10);
+    private void updateSimulationStats() {
+        SimulationStats simulationStats = simulation.getStats();
+        day.setText(String.valueOf(simulationStats.day()));
+        animalsCount.setText(String.valueOf(simulationStats.animalsCount()));
+        grassCount.setText(String.valueOf(simulationStats.grassCount()));
+        emptySquareCount.setText(String.valueOf(simulationStats.emptySquareCount()));
+        averageEnergy.setText(String.format("%.2f", simulationStats.averageEnergy()));
+        averageLifespan.setText(String.format("%.2f", simulationStats.averageLifeSpan()));
+        averageChildrenCount.setText(String.format("%.2f", simulationStats.averageChildrenCount()));
+        topGenomes.setText(simulationStats.genomePopularity().entrySet().stream()
+                .sorted(Map.Entry.<Genome, Integer>comparingByValue().reversed())
+                .limit(10)
+                .map(entry -> entry.getKey() + ": " + entry.getValue())
+                .collect(Collectors.joining("\n")));
     }
 
-    @FXML
-    public void resumeSimulation() {
-        simulation.start();
-        resumeButton.setVisible(false);
-        resumeButton.setManaged(false);
-        stopButton.setVisible(true);
-        stopButton.setManaged(true);
-        for (Circle circle : circles.values())
-            circle.setOnMouseClicked(null);
-    }
+    private void updateAnimalStats() {
+        if (followedAnimal == null) {
+            followedAnimalBox.setVisible(false);
+            followedAnimalBox.setManaged(false);
+            notFollowingAnimal.setVisible(true);
+            notFollowingAnimal.setManaged(true);
+        } else {
+            followedAnimalBox.setVisible(true);
+            followedAnimalBox.setManaged(true);
+            notFollowingAnimal.setVisible(false);
+            notFollowingAnimal.setManaged(false);
 
-    @FXML
-    public void stopSimulation() {
-        simulation.stop();
-        stopButton.setVisible(false);
-        stopButton.setManaged(false);
-        resumeButton.setVisible(true);
-        resumeButton.setManaged(true);
-        for (Vector2d position : circles.keySet())
-            circles.get(position).setOnMouseClicked(e -> {
-                Set<Animal> animals = map.getAnimalsAt(position);
-                followedAnimal = animals.isEmpty() ? null : Collections.max(animals);
-                mapChanged(map);
-            });
-    }
+            AnimalStats animalStats = followedAnimal.getStats();
+            String text = animalStats.genome().toString();
+            Text before = new Text(text.substring(0, 2 * animalStats.activeGene()));
+            Text colored = new Text(String.valueOf(text.charAt(2 * animalStats.activeGene())));
+            colored.setFill(Color.RED);
+            Text after = new Text(text.substring(2 * animalStats.activeGene() + 1));
+            TextFlow textFlow = new TextFlow();
+            textFlow.getChildren().addAll(before, colored, after);
+            followedAnimalGenome.setGraphic(textFlow);
 
+            followedAnimalEnergy.setText(String.valueOf(animalStats.energy()));
+            followedAnimalGrassEaten.setText(String.valueOf(animalStats.grassEaten()));
+            followedAnimalChildren.setText(String.valueOf(animalStats.children()));
+            followedAnimalDescendants.setText(String.valueOf(animalStats.descendants()));
+            followedAnimalDaysAlive.setText(String.valueOf(animalStats.lifeSpan()));
+            if (followedAnimal.isAlive()) {
+                followedAnimalDayOfDeathBox.setVisible(false);
+                followedAnimalDayOfDeathBox.setManaged(false);
+            } else {
+                followedAnimalDayOfDeathBox.setVisible(true);
+                followedAnimalDayOfDeathBox.setManaged(true);
+                followedAnimalDayOfDeath.setText(String.valueOf(animalStats.deathDay().get()));
+            }
+        }
+    }
 }
