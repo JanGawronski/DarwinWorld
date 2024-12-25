@@ -37,8 +37,14 @@ import model.elements.animal.Genome;
 public class SimulationPresenter implements MapChangeListener {
     private Simulation simulation;
     private WorldMap map;
-    private HashMap<Vector2d, Circle> circles = new HashMap<>();
-    private HashMap<Vector2d, Rectangle> squares = new HashMap<>();
+    private HashMap<Vector2d, Circle> animalCircles = new HashMap<>();
+    private HashMap<Vector2d, Rectangle> grassSquares = new HashMap<>();
+    private static final Color[] energyColor = new Color[256];
+    static {
+        for (int i = 0; i < 256; i++) {
+            energyColor[i] = Color.rgb(255 - i, i, 0);
+        }
+    }
     private Animal followedAnimal;
     @FXML
     private GridPane mapGrid;
@@ -63,9 +69,15 @@ public class SimulationPresenter implements MapChangeListener {
     @FXML
     private Label topGenomes;
     @FXML
+    private Button showDominantGenomeAnimalsButton;
+    @FXML
+    private Button showPreferredSquaresButton;
+    @FXML
     private Label notFollowingAnimal;
     @FXML
     private VBox followedAnimalBox;
+    @FXML
+    private Button stopFollowingButton;
     @FXML
     private Label followedAnimalGenome;
     @FXML
@@ -102,7 +114,11 @@ public class SimulationPresenter implements MapChangeListener {
         resumeButton.setManaged(false);
         stopButton.setVisible(true);
         stopButton.setManaged(true);
-        for (Circle circle : circles.values())
+        showDominantGenomeAnimalsButton.setVisible(false);
+        showDominantGenomeAnimalsButton.setManaged(false);
+        showPreferredSquaresButton.setVisible(false);
+        showPreferredSquaresButton.setManaged(false);
+        for (Circle circle : animalCircles.values())
             circle.setOnMouseClicked(null);
     }
 
@@ -113,11 +129,15 @@ public class SimulationPresenter implements MapChangeListener {
         stopButton.setManaged(false);
         resumeButton.setVisible(true);
         resumeButton.setManaged(true);
-        for (Vector2d position : circles.keySet())
-            circles.get(position).setOnMouseClicked(e -> {
+        showDominantGenomeAnimalsButton.setVisible(true);
+        showDominantGenomeAnimalsButton.setManaged(true);
+        showPreferredSquaresButton.setVisible(true);
+        showPreferredSquaresButton.setManaged(true);
+        for (Vector2d position : animalCircles.keySet())
+            animalCircles.get(position).setOnMouseClicked(e -> {
                 Set<Animal> animals = map.getAnimalsAt(position);
                 followedAnimal = animals.isEmpty() ? null : Collections.max(animals);
-                updateAnimalStats();
+                mapChanged(map);
             });
     }
 
@@ -161,8 +181,8 @@ public class SimulationPresenter implements MapChangeListener {
                 cell.getChildren().addAll(square, circle);
                 mapGrid.add(cell, i, j);
                 Vector2d position = new Vector2d(i, j);
-                circles.put(position, circle);
-                squares.put(position, square);
+                animalCircles.put(position, circle);
+                grassSquares.put(position, square);
 
             }
         }
@@ -171,10 +191,18 @@ public class SimulationPresenter implements MapChangeListener {
     @Override
     public void mapChanged(WorldMap map) {
         Platform.runLater(() -> {
-            for (Vector2d position : circles.keySet()) {
-                squares.get(position).setVisible(map.isGrassOn(position));
-                circles.get(position).setVisible(map.getAnimalsAt(position).size() > 0);
+            for (Vector2d position : animalCircles.keySet()) {
+                grassSquares.get(position).setVisible(map.isGrassOn(position));
+                grassSquares.get(position).setFill(Color.GREEN);
+                Set<Animal> animals = map.getAnimalsAt(position);
+                animalCircles.get(position).setVisible(!animals.isEmpty());
+                if (!animals.isEmpty()) {
+                    Animal animal = Collections.max(animals);
+                    animalCircles.get(position).setFill(energyColor[Math.min(animal.getEnergy(), 255)]);
+                }
             }
+            if (followedAnimal != null && followedAnimal.isAlive())
+                animalCircles.get(followedAnimal.getPosition()).setFill(Color.DARKVIOLET);
             updateSimulationStats();
             updateAnimalStats();
         });
@@ -232,5 +260,32 @@ public class SimulationPresenter implements MapChangeListener {
                 followedAnimalDayOfDeath.setText(String.valueOf(animalStats.deathDay().get()));
             }
         }
+    }
+
+    @FXML
+    public void stopFollowingAnimal() {
+        followedAnimal = null;
+        mapChanged(map);
+    }
+
+    @FXML
+    public void showDominantGenomeAnimals() {
+        mapChanged(map);
+        Platform.runLater(() -> {
+            simulation.getPopularGenome().forEach(animal -> {
+                animalCircles.get(animal.getPosition()).setFill(Color.BLUE);
+            });
+        });
+    }
+
+    @FXML
+    public void showPreferredSquares() {
+        mapChanged(map);
+        Platform.runLater(() -> {
+            simulation.getPreferredPositions().forEach(position -> {
+                grassSquares.get(position).setVisible(true);
+                grassSquares.get(position).setFill(Color.DARKGREEN);
+            });
+        });
     }
 }
