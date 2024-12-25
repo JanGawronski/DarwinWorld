@@ -26,7 +26,7 @@ public class Animal implements WorldElement, Comparable<Animal> {
     private int descendantCount = 0;
     private UUID latestDescendantId = null;
     private Integer deathDate = null;
-    private int liveSpan = 0;
+    private int lifeSpan = 0;
 
     public Animal(AnimalConfigData config, int startingEnergy, Genome genome, int startingGene, MapDirection orientation, Vector2d position, Pair<Animal, Animal> parents) {
         if (startingEnergy < 0)
@@ -75,7 +75,7 @@ public class Animal implements WorldElement, Comparable<Animal> {
     @Override
     public int compareTo(Animal other) {
         return Comparator.comparingInt((Animal animal) -> animal.energy)
-                .thenComparingInt(animal -> animal.liveSpan)
+                .thenComparingInt(animal -> animal.lifeSpan)
                 .thenComparingInt(animal -> animal.childCount)
                 .thenComparing(animal -> animal.id)
                 .compare(this, other);
@@ -88,7 +88,7 @@ public class Animal implements WorldElement, Comparable<Animal> {
 
     public void move(MoveConverter converter) {
         energy--;
-        liveSpan++;
+        lifeSpan++;
 
         MapDirection newOrientation = orientation.rotated(genome.get(activeGene));
         Vector2d newPosition = position.add(newOrientation.toMovementVector());
@@ -98,11 +98,6 @@ public class Animal implements WorldElement, Comparable<Animal> {
         this.orientation = newMove.second();
 
         activeGene = this.config.selector().nextGene(activeGene);
-    }
-
-    @Override
-    public boolean isAt(Vector2d otherPosition) {
-        return this.position.equals(otherPosition);
     }
 
     public MapDirection getOrientation() {
@@ -122,13 +117,8 @@ public class Animal implements WorldElement, Comparable<Animal> {
         return genome;
     }
 
-    @Override
-    public String toString() {
-        return orientation.toString();
-    }
-
     public int getLifeSpan() {
-        return liveSpan;
+        return lifeSpan;
     }
 
     public int getChildrenCount() {
@@ -159,6 +149,6 @@ public class Animal implements WorldElement, Comparable<Animal> {
     }
 
     public AnimalStats getStats() {
-        return new AnimalStats(genome, activeGene, energy, grassEaten, childCount, descendantCount, liveSpan, Optional.ofNullable(deathDate));
+        return new AnimalStats(genome, activeGene, energy, grassEaten, childCount, descendantCount, lifeSpan, Optional.ofNullable(deathDate));
     }
 }

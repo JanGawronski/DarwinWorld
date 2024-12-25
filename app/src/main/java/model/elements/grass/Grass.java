@@ -14,14 +14,4 @@ public class Grass implements WorldElement {
     public Vector2d getPosition() {
         return position;
     }
-
-    @Override
-    public boolean isAt(Vector2d otherPosition) {
-        return position.equals(otherPosition);
-    }
-
-    @Override
-    public String toString() {
-        return "*";
-    }
 }
