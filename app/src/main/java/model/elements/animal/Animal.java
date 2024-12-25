@@ -9,12 +9,14 @@ import model.map.MoveConverter;
 
 import java.util.Comparator;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class Animal implements WorldElement, Comparable<Animal> {
     private final AnimalConfigData config;
     private final Genome genome;
     private final Pair<Animal, Animal> parents;
+    private final UUID id = UUID.randomUUID();
     private int activeGene;
     private int energy;
     private MapDirection orientation;
@@ -22,8 +24,8 @@ public class Animal implements WorldElement, Comparable<Animal> {
     private int grassEaten = 0;
     private int childCount = 0;
     private int descendantCount = 0;
+    private UUID latestDescendantId = null;
     private Integer deathDate = null;
-    private Integer latestBreedId = null;
     private int liveSpan = 0;
 
     public Animal(AnimalConfigData config, int startingEnergy, Genome genome, int startingGene, MapDirection orientation, Vector2d position, Pair<Animal, Animal> parents) {
@@ -48,7 +50,7 @@ public class Animal implements WorldElement, Comparable<Animal> {
         this(config, startingEnergy, Genome.randomGenome(config.selector().getGenomeLength()), ThreadLocalRandom.current().nextInt(config.selector().getGenomeLength()), MapDirection.randomDirection(), position, null);
     }
 
-    public static Animal breed(Animal father, Animal mother, int breedId) throws ParentNotSaturatedException {
+    public static Animal breed(Animal father, Animal mother) throws ParentNotSaturatedException {
         if (father == mother)
             throw new IllegalArgumentException("Parents be different Animals");
         if (!father.config.equals(mother.config))
@@ -62,11 +64,12 @@ public class Animal implements WorldElement, Comparable<Animal> {
         Genome childGenome = Genome.breedGenome(mother.genome, mother.energy, father.genome, father.energy, setup.mutator());
         father.childCount++;
         mother.childCount++;
-        mother.addDescendant(breedId);
-        father.addDescendant(breedId);
         father.energy -= setup.birthEnergy();
         mother.energy -= setup.birthEnergy();
-        return new Animal(setup, 2 * setup.birthEnergy(), childGenome, father.position, new Pair<>(mother, father));
+        Animal newborn = new Animal(setup, 2 * setup.birthEnergy(), childGenome, father.position, new Pair<>(mother, father));
+        mother.addDescendant(newborn.id);
+        father.addDescendant(newborn.id);
+        return newborn;
     }
 
     @Override
@@ -74,7 +77,7 @@ public class Animal implements WorldElement, Comparable<Animal> {
         return Comparator.comparingInt((Animal animal) -> animal.energy)
                 .thenComparingInt(animal -> animal.liveSpan)
                 .thenComparingInt(animal -> animal.childCount)
-                .thenComparingInt(animal -> ThreadLocalRandom.current().nextInt())
+                .thenComparing(animal -> animal.id)
                 .compare(this, other);
     }
 
@@ -132,15 +135,15 @@ public class Animal implements WorldElement, Comparable<Animal> {
         return childCount;
     }
 
-    private void addDescendant(int breedNumber) {
-        if (latestBreedId != null && breedNumber == latestBreedId)
+    private void addDescendant(UUID descendantId) {
+        if (latestDescendantId != null && latestDescendantId.equals(descendantId))
             return;
-        latestBreedId = breedNumber;
+        latestDescendantId = descendantId;
         descendantCount++;
         if (parents == null)
             return;
-        parents.first().addDescendant(breedNumber);
-        parents.second().addDescendant(breedNumber);
+        parents.first().addDescendant(descendantId);
+        parents.second().addDescendant(descendantId);
     }
 
     public boolean isAlive() {

@@ -27,7 +27,7 @@ public class AnimalTest {
         Animal animal4 = new Animal(config, 9, position);
         Animal animal5 = null;
         try {
-            animal5 = Animal.breed(animal2, animal3, 0);
+            animal5 = Animal.breed(animal2, animal3);
         } catch (ParentNotSaturatedException e) {
             fail();
         }
@@ -56,16 +56,16 @@ public class AnimalTest {
         Animal different1 = new Animal(config2, 100, p);
         Animal different2 = new Animal(config, 100, new Vector2d(1, 1));
 
-        assertThrows(IllegalArgumentException.class, () -> Animal.breed(a1, different1, 0));
-        assertThrows(IllegalArgumentException.class, () -> Animal.breed(a2, different2, 0));
-        assertThrows(IllegalArgumentException.class, () -> Animal.breed(a1, a1, 0));
+        assertThrows(IllegalArgumentException.class, () -> Animal.breed(a1, different1));
+        assertThrows(IllegalArgumentException.class, () -> Animal.breed(a2, different2));
+        assertThrows(IllegalArgumentException.class, () -> Animal.breed(a1, a1));
 
         try {
-            Animal c3 = Animal.breed(a0, a1, 1);
-            Animal c4 = Animal.breed(a0, a1, 2);
-            Animal c5 = Animal.breed(a0, c3, 3);
-            Animal c6 = Animal.breed(a0, a2, 4);
-            Animal c7 = Animal.breed(c3, c4, 5);
+            Animal c3 = Animal.breed(a0, a1);
+            Animal c4 = Animal.breed(a0, a1);
+            Animal c5 = Animal.breed(a0, c3);
+            Animal c6 = Animal.breed(a0, a2);
+            Animal c7 = Animal.breed(c3, c4);
 
 
             AnimalStats[] st = new AnimalStats[]{a0.getStats(), a1.getStats(), a2.getStats(), c3.getStats(), c4.getStats(), c5.getStats(), c6.getStats(), c7.getStats()};
@@ -94,7 +94,7 @@ public class AnimalTest {
             for (int i = 5; i <= 7; i++)
                 assertEquals(0, st[i].children());
 
-            assertThrows(ParentNotSaturatedException.class, () -> Animal.breed(c3, a0, 10));
+            assertThrows(ParentNotSaturatedException.class, () -> Animal.breed(c3, a0));
         } catch (ParentNotSaturatedException e) {
             fail();
         }

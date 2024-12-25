@@ -128,7 +128,7 @@ public class Simulation implements Runnable {
                 Animal first = Collections.max(positionAnimals);
                 Animal second = Collections.max(positionAnimals.stream().filter(animal -> animal != first).toList());
                 try {
-                    Animal child = Animal.breed(first, second, this.animals.size() + this.deadAnimals.size());
+                    Animal child = Animal.breed(first, second);
                     animals.add(child);
                     genomePopularity.merge(child.getGenome(), 1, Integer::sum);
                     map.place(child);
