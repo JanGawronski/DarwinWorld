@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Spinner?>
+<?import javafx.scene.control.RadioButton?>
+<?import javafx.scene.control.ToggleGroup?>
+
+<VBox spacing="10" xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      minHeight="800.0" minWidth="500.0"
+      fx:controller="presenter.StartPresenter">
+    <fx:define>
+        <ToggleGroup fx:id="plantGrowthVariant" />
+    </fx:define>
+    <fx:define>
+        <ToggleGroup fx:id="behaviourVariant" />
+    </fx:define>
+    <HBox>
+        <Label text="Height of a map: "/>
+        <Spinner fx:id="mapHeight" min="1" max="1000" initialValue="10" editable="true"/>
+    </HBox>
+    <HBox>
+        <Label text="Width of a map: "/>
+        <Spinner fx:id="mapWidth" min="1" max="1000" initialValue="10" editable="true"/>
+    </HBox>
+    <HBox>
+        <Label text="Initial number of plants: "/>
+        <Spinner fx:id="initialPlants" min="0" max="100" initialValue="10" editable="true"/>
+    </HBox>
+    <HBox>
+        <Label text="Energy provided by one plant: "/>
+        <Spinner fx:id="plantEnergy" min="0" max="1000" initialValue="10" editable="true"/>
+    </HBox>
+    <HBox>
+        <Label text="Number of plants growing each day: "/>
+        <Spinner fx:id="dailyPlantGrowth" min="0" max="1000" initialValue="10" editable="true"/>
+    </HBox>
+    <HBox>
+        <Label text="Plant growth variant: "/>
+        <RadioButton fx:id="defaultPlantGrowthVariant" text="Forested equators" toggleGroup="$plantGrowthVariant" selected="true"/>
+        <RadioButton text="Creeping jungle" toggleGroup="$plantGrowthVariant"/>
+    </HBox>
+    <HBox>
+        <Label text="Initial number of animals: "/>
+        <Spinner fx:id="initialAnimals" min="0" max="1000" initialValue="10" editable="true"/>
+    </HBox>
+    <HBox>
+        <Label text="Initial energy of animals: "/>
+        <Spinner fx:id="initialAnimalEnergy" min="0" max="1000" initialValue="10" editable="true"/>
+    </HBox>
+    <HBox>
+        <Label text="Energy required for an animal to be considered fed: "/>
+        <Spinner fx:id="saturationEnergy" min="0" max="1000" initialValue="10" editable="true"/>
+    </HBox>
+    <HBox>
+        <Label text="Energy used by parents to create offspring: "/>
+        <Spinner fx:id="offspringEnergy" min="0" max="10" initialValue="10" editable="true"/>
+    </HBox>
+    <HBox>
+        <Label text="Minimum number of mutations in offspring: "/>
+        <Spinner fx:id="minMutations" min="0" max="10" initialValue="0" editable="true"/>
+    </HBox>
+    <HBox>
+        <Label text="Maximum number of mutations in offspring: "/>
+        <Spinner fx:id="maxMutations" min="10" max="10" initialValue="10" editable="true"/>
+    </HBox>
+    <HBox>
+        <Label text="Behaviour variant: "/>
+        <RadioButton fx:id="defaultBehaviourVariant" text="Full predestination" toggleGroup="$behaviourVariant" selected="true"/>
+        <RadioButton text="A bit of madness" toggleGroup="$behaviourVariant"/>
+    </HBox>
+    <HBox>
+        <Label text="Length of animal genome: "/>
+        <Spinner fx:id="genomeLength" min="1" max="1000" initialValue="10" editable="true"/>
+    </HBox>
+    <Button text="Start simulation" onAction="#startSimulation"/>
+</VBox>

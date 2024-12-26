@@ -5,6 +5,8 @@ import model.elements.animal.Animal;
 import model.elements.animal.Genome;
 import model.elements.animal.ParentNotSaturatedException;
 import model.elements.grass.Grass;
+import model.elements.grass.generators.CreepingJungle;
+import model.elements.grass.generators.ForestedEquators;
 import model.elements.grass.generators.GrassGenerator;
 import model.map.WorldMap;
 
@@ -27,10 +29,10 @@ public class Simulation implements Runnable {
     private ExecutorService executor;
     private volatile int speed = 1;
 
-    public Simulation(WorldMap map, AnimalConfigData animalConfigData, GrassGenerator grassGenerator,
+    public Simulation(WorldMap map, AnimalConfigData animalConfigData, boolean defaultGrassGenerator,
                       int initialGrassCount, int grassGrowthRate, int initialAnimalCount, int initialEnergy) {
         this.map = map;
-        this.grassGenerator = grassGenerator;
+        this.grassGenerator = defaultGrassGenerator ? new ForestedEquators(map) : new CreepingJungle(map);
         this.grassGrowthRate = grassGrowthRate;
 
         if (initialGrassCount > map.getHeight() * map.getWidth())
@@ -48,6 +50,11 @@ public class Simulation implements Runnable {
             genomePopularity.merge(animal.getGenome(), 1, Integer::sum);
             this.map.place(animal);
         }
+    }
+
+    public Simulation(SimulationConfig config) {
+        this(config.map(), config.animalConfigData(), config.defaultGrassGenerator(), config.initialGrassCount(),
+                config.grassGrowthRate(), config.initialAnimalCount(), config.initialEnergy());
     }
 
     @Override

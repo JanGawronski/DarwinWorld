@@ -3,7 +3,6 @@ import org.junit.jupiter.api.Test;
 import model.AnimalConfigData;
 import model.map.WorldMap;
 import simulation.Simulation;
-import model.elements.grass.generators.ForestedEquators;
 import model.elements.animal.Animal;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -19,7 +18,7 @@ public class SimulationTest {
     void initialSetup() {
         AnimalConfigData config = new AnimalConfigData(1, 1, 1, true, 1, 1, 1);
         WorldMap map = new WorldMap(10, 10);
-        new Simulation(map, config, new ForestedEquators(map), 10, 1, 10, 1);
+        new Simulation(map, config, true, 10, 1, 10, 1);
 
         assertEquals(10, map.getGrasses().size());
         assertEquals(10, map.getAnimalsMap().values().stream().mapToInt(HashSet::size).sum());
@@ -37,13 +36,13 @@ public class SimulationTest {
 
             AnimalConfigData config = new AnimalConfigData(1, 1, 1, true, 1, 1, 1);
             WorldMap map = new WorldMap(10, 10);
-            Simulation simulation1 = new Simulation(map, config, new ForestedEquators(map), 10, 1, 10, 0);
+            Simulation simulation1 = new Simulation(map, config, true, 10, 1, 10, 0);
 
             removeDeadAnimals.invoke(simulation1);
 
             assertEquals(0, map.getAnimalsMap().values().stream().mapToInt(HashSet::size).sum());
 
-            Simulation simulation2 = new Simulation(map, config, new ForestedEquators(map), 10, 1, 10, 1);
+            Simulation simulation2 = new Simulation(map, config, true, 10, 1, 10, 1);
 
             removeDeadAnimals.invoke(simulation2);
 
@@ -61,7 +60,7 @@ public class SimulationTest {
 
             AnimalConfigData config = new AnimalConfigData(1, 1, 1, true, 1, 1, 1);
             WorldMap map1 = new WorldMap(10, 10);
-            Simulation simulation1 = new Simulation(map1, config, new ForestedEquators(map1), 100, 1, 10, 1);
+            Simulation simulation1 = new Simulation(map1, config, true, 100, 1, 10, 1);
 
             eatGrass.invoke(simulation1);
 
@@ -72,7 +71,7 @@ public class SimulationTest {
                     .anyMatch(animal -> animal.getEnergy() > 1));
 
             WorldMap map2 = new WorldMap(10, 10);
-            Simulation simulation2 = new Simulation(map2, config, new ForestedEquators(map2), 0, 1, 10, 1);
+            Simulation simulation2 = new Simulation(map2, config, true, 0, 1, 10, 1);
 
             eatGrass.invoke(simulation2);
 
@@ -94,7 +93,7 @@ public class SimulationTest {
 
             AnimalConfigData config = new AnimalConfigData(1, 1, 1, true, 1, 1, 1);
             WorldMap map1 = new WorldMap(10, 10);
-            Simulation simulation1 = new Simulation(map1, config, new ForestedEquators(map1), 10, 1, 101, 1);
+            Simulation simulation1 = new Simulation(map1, config, true, 10, 1, 101, 1);
 
             breedAnimals.invoke(simulation1);
 
@@ -130,7 +129,7 @@ public class SimulationTest {
 
             AnimalConfigData config = new AnimalConfigData(1, 1, 1, true, 1, 1, 1);
             WorldMap map = new WorldMap(10, 10);
-            Simulation simulation = new Simulation(map, config, new ForestedEquators(map), 10, 50, 10, 1);
+            Simulation simulation = new Simulation(map, config, true, 10, 50, 10, 1);
 
             growGrass.invoke(simulation);
 

@@ -23,12 +23,11 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.text.Text;
 
-import model.AnimalConfigData;
 import model.Vector2d;
 import model.map.MapChangeListener;
 import model.map.WorldMap;
-import model.elements.grass.generators.ForestedEquators;
 import simulation.Simulation;
+import simulation.SimulationConfig;
 import simulation.SimulationStats;
 import model.elements.animal.Animal;
 import model.elements.animal.AnimalStats;
@@ -95,14 +94,11 @@ public class SimulationPresenter implements MapChangeListener {
     @FXML
     private Label followedAnimalDayOfDeath;
 
-    public void startSimulation() {
-        WorldMap map = new WorldMap(100, 100);
-        this.map = map;
+    public void startSimulation(SimulationConfig config) {
+        this.map = config.map();
         map.addListener(this);
         drawGrid(map);
-        AnimalConfigData animalConfigData = new AnimalConfigData(10, 5, 5, true, 4, 1, 4);
-        Simulation simulation = new Simulation(map, animalConfigData, new ForestedEquators(map), 100, 100, 100, 10);
-        this.simulation = simulation;
+        this.simulation = new Simulation(config);
         simulation.start();
         simulation.setSpeed(10);
     }
