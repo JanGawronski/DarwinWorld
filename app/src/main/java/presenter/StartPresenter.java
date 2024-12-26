@@ -5,15 +5,15 @@ import java.util.function.BiConsumer;
 
 import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.Spinner;
 import javafx.scene.control.SpinnerValueFactory;
-import javafx.stage.Stage;
 import javafx.beans.value.ChangeListener;
 import simulation.SimulationConfig;
 
 public class StartPresenter {
-    private BiConsumer<Stage, SimulationConfig> showSimulationWindowHandler;
+    private BiConsumer<SimulationConfig, Boolean> showSimulationWindowHandler;
     @FXML
     private Spinner<Integer> mapHeight;
     @FXML
@@ -42,6 +42,8 @@ public class StartPresenter {
     private RadioButton defaultBehaviourVariant;
     @FXML
     private Spinner<Integer> genomeLength;
+    @FXML
+    private CheckBox saveStats;
 
     @FXML
     public void initialize() {
@@ -83,7 +85,7 @@ public class StartPresenter {
         });
     }
 
-    public void setShowSimulationWindowHandler(BiConsumer<Stage, SimulationConfig> handler) {
+    public void setShowSimulationWindowHandler(BiConsumer<SimulationConfig, Boolean> handler) {
         this.showSimulationWindowHandler = handler;
     }
 
@@ -96,6 +98,6 @@ public class StartPresenter {
                 initialAnimalEnergy.getValue(), saturationEnergy.getValue(), offspringEnergy.getValue(),
                 minMutations.getValue(),
                 maxMutations.getValue(), defaultBehaviourVariant.isSelected(), genomeLength.getValue());
-        showSimulationWindowHandler.accept(new Stage(), config);
+        showSimulationWindowHandler.accept(config, saveStats.isSelected());
     }
 }

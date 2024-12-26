@@ -17,9 +17,9 @@ public class App extends Application {
         loader.setLocation(getClass().getClassLoader().getResource("start.fxml"));
         VBox startRoot = loader.load();
         StartPresenter startPresenter = loader.getController();
-        startPresenter.setShowSimulationWindowHandler((stage, config) -> {
+        startPresenter.setShowSimulationWindowHandler((config, saveStats) -> {
             try {
-                showSimulationWindow(stage, config);
+                showSimulationWindow(config, saveStats);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -29,13 +29,14 @@ public class App extends Application {
         primaryStage.show();
     }
 
-    public void showSimulationWindow(Stage primaryStage, SimulationConfig config) throws IOException {
+    public void showSimulationWindow(SimulationConfig config, boolean saveStats) throws IOException {
         FXMLLoader loader = new FXMLLoader();
         loader.setLocation(getClass().getClassLoader().getResource("simulation.fxml"));
         HBox simulationRoot = loader.load();
         SimulationPresenter simulationPresenter = loader.getController();
+        Stage primaryStage = new Stage();
         primaryStage.setOnCloseRequest(e -> simulationPresenter.stopSimulation());
-        simulationPresenter.startSimulation(config);
+        simulationPresenter.startSimulation(config, saveStats);
         configureStage(primaryStage, simulationRoot);
         primaryStage.show();
     }

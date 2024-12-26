@@ -2,6 +2,9 @@ package presenter;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.Collections;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -45,6 +48,8 @@ public class SimulationPresenter implements MapChangeListener {
         }
     }
     private Animal followedAnimal;
+    private boolean saveStats;
+    private BufferedWriter writer;
     @FXML
     private GridPane mapGrid;
     @FXML
@@ -94,13 +99,22 @@ public class SimulationPresenter implements MapChangeListener {
     @FXML
     private Label followedAnimalDayOfDeath;
 
-    public void startSimulation(SimulationConfig config) {
+    public void startSimulation(SimulationConfig config, boolean saveStats) {
         this.map = config.map();
         map.addListener(this);
         drawGrid(map);
+        this.saveStats = saveStats;
+        if (saveStats) {
+            try {
+                writer = new BufferedWriter(new FileWriter("simulation_" + System.currentTimeMillis() + ".csv"));
+                writer.write("day,animalsCount,grassCount,emptySquareCount,averageEnergy,averageLifespan,averageChildrenCount,topGenomes\n");
+            } catch (IOException e) {
+                saveStats = false;
+                e.printStackTrace();
+            }
+        }
         this.simulation = new Simulation(config);
         simulation.start();
-        simulation.setSpeed(10);
     }
 
     @FXML
@@ -218,6 +232,30 @@ public class SimulationPresenter implements MapChangeListener {
                 .limit(10)
                 .map(entry -> entry.getKey() + ": " + entry.getValue())
                 .collect(Collectors.joining("\n")));
+        if (saveStats)
+            saveStats(simulationStats);
+    }
+
+    private void saveStats(SimulationStats simulationStats) {
+        try {
+            writer.write(simulationStats.day() + ",");
+            writer.write(simulationStats.animalsCount() + ",");
+            writer.write(simulationStats.grassCount() + ",");
+            writer.write(simulationStats.emptySquareCount() + ",");
+            writer.write(String.format("%.2f", simulationStats.averageEnergy()) + ",");
+            writer.write(String.format("%.2f", simulationStats.averageLifeSpan()) + ",");
+            writer.write(String.format("%.2f", simulationStats.averageChildrenCount()) + ",");
+            writer.write(simulationStats.genomePopularity().entrySet().stream()
+                    .sorted(Map.Entry.<Genome, Integer>comparingByValue().reversed())
+                    .limit(10)
+                    .map(entry -> entry.getKey() + ": " + entry.getValue())
+                    .collect(Collectors.joining(" ")) + "\n"
+            );
+            writer.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        
     }
 
     private void updateAnimalStats() {

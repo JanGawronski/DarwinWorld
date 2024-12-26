@@ -7,10 +7,11 @@
 <?import javafx.scene.control.Spinner?>
 <?import javafx.scene.control.RadioButton?>
 <?import javafx.scene.control.ToggleGroup?>
+<?import javafx.scene.control.CheckBox?>
 
 <VBox spacing="10" xmlns="http://javafx.com/javafx"
       xmlns:fx="http://javafx.com/fxml"
-      minHeight="800.0" minWidth="500.0"
+      minHeight="600.0" minWidth="500.0"
       fx:controller="presenter.StartPresenter">
     <fx:define>
         <ToggleGroup fx:id="plantGrowthVariant" />
@@ -75,6 +76,10 @@
     <HBox>
         <Label text="Length of animal genome: "/>
         <Spinner fx:id="genomeLength" min="1" max="1000" initialValue="10" editable="true"/>
+    </HBox>
+    <HBox>
+        <Label text="Save statistics to file: "/>
+        <CheckBox fx:id="saveStats"/>
     </HBox>
     <Button text="Start simulation" onAction="#startSimulation"/>
 </VBox>
