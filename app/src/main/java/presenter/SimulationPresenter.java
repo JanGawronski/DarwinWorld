@@ -268,7 +268,7 @@ public class SimulationPresenter implements MapChangeListener {
     public void showDominantGenomeAnimals() {
         mapChanged(map);
         Platform.runLater(() -> {
-            simulation.getPopularGenome().forEach(animal -> {
+            simulation.getPopularAnimals().forEach(animal -> {
                 animalCircles.get(animal.getPosition()).setFill(Color.BLUE);
             });
         });

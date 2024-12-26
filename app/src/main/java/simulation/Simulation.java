@@ -19,8 +19,8 @@ import java.util.concurrent.Executors;
 
 
 public class Simulation implements Runnable {
-    private final Set<Animal> animals = Collections.newSetFromMap(new ConcurrentHashMap<Animal, Boolean>());
-    private final Set<Animal> deadAnimals = Collections.newSetFromMap(new ConcurrentHashMap<Animal, Boolean>());
+    private final Set<Animal> animals = Collections.newSetFromMap(new ConcurrentHashMap<>());
+    private final Set<Animal> deadAnimals = Collections.newSetFromMap(new ConcurrentHashMap<>());
     private final WorldMap map;
     private final GrassGenerator grassGenerator;
     private final int grassGrowthRate;
@@ -131,18 +131,18 @@ public class Simulation implements Runnable {
     private void breedAnimals() {
         Map<Vector2d, HashSet<Animal>> animalsByPosition = map.getAnimalsMap();
         for (HashSet<Animal> positionAnimals : animalsByPosition.values()) {
-            if (positionAnimals.size() >= 2) {
-                Animal first = Collections.max(positionAnimals);
-                Animal second = Collections.max(positionAnimals.stream().filter(animal -> animal != first).toList());
-                try {
-                    Animal child = Animal.breed(first, second);
-                    animals.add(child);
-                    genomePopularity.merge(child.getGenome(), 1, Integer::sum);
-                    map.place(child);
-                } catch (ParentNotSaturatedException e) {
-                    // not enough energy in parents, no child
-                }
-
+            if (positionAnimals.size() < 2) {
+                continue;
+            }
+            Animal first = Collections.max(positionAnimals);
+            Animal second = Collections.max(positionAnimals.stream().filter(animal -> animal != first).toList());
+            try {
+                Animal child = Animal.breed(first, second);
+                animals.add(child);
+                genomePopularity.merge(child.getGenome(), 1, Integer::sum);
+                map.place(child);
+            } catch (ParentNotSaturatedException e) {
+                // not enough energy in parents, no child
             }
         }
     }
@@ -169,11 +169,8 @@ public class Simulation implements Runnable {
         return grassGenerator.getPreferred();
     }
 
-    public List<Animal> getPopularGenome() {
+    public List<Animal> getPopularAnimals() {
         Optional<Genome> bestGenome = genomePopularity.entrySet().stream().max(Map.Entry.comparingByValue()).map(Map.Entry::getKey);
-        if (bestGenome.isEmpty()) {
-            return List.of();
-        }
-        return animals.stream().filter(animal -> animal.getGenome().equals(bestGenome.get())).toList();
+        return bestGenome.map(genome -> animals.stream().filter(animal -> animal.getGenome().equals(genome)).toList()).orElseGet(List::of);
     }
 }

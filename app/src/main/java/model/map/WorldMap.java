@@ -96,11 +96,11 @@ public class WorldMap implements MoveConverter {
     }
 
     public Set<Animal> getAnimalsAt(Vector2d position) {
-        return Collections.unmodifiableSet(animals.getOrDefault(position, new HashSet<Animal>()));
+        return Collections.unmodifiableSet(animals.getOrDefault(position, new HashSet<>()));
     }
 
     public Set<Grass> getGrasses() {
-        return Collections.unmodifiableSet(new HashSet<Grass>(grasses.values()));
+        return Collections.unmodifiableSet(new HashSet<>(grasses.values()));
     }
 
     public Set<Vector2d> getGrassesPositions() {

@@ -10,7 +10,7 @@ public class ForestedEquators extends AbstractGrassGenerator {
 
     @Override
     protected boolean isPreferred(Vector2d position) {
-        return position.y() > 4 * map.getHeight() / 10 && position.y() < 6 * map.getHeight() / 10;
+        return position.y() >= 4 * map.getHeight() / 10 && position.y() <= 5 * map.getHeight() / 10;
     }
 
 }
