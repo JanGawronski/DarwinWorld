@@ -10,7 +10,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.lang.reflect.Method;
-import java.util.HashSet;
+import java.util.Set;
 import java.lang.reflect.InvocationTargetException;
 
 public class SimulationTest {
@@ -21,10 +21,10 @@ public class SimulationTest {
         new Simulation(map, config, true, 10, 1, 10, 1);
 
         assertEquals(10, map.getGrasses().size());
-        assertEquals(10, map.getAnimalsMap().values().stream().mapToInt(HashSet::size).sum());
+        assertEquals(10, map.getAnimalsMap().values().stream().mapToInt(Set::size).sum());
 
         map.getAnimalsMap().values().stream()
-                .flatMap(HashSet::stream)
+                .flatMap(Set::stream)
                 .forEach(animal -> assertEquals(1, animal.getEnergy()));
     }
 
@@ -40,13 +40,13 @@ public class SimulationTest {
 
             removeDeadAnimals.invoke(simulation1);
 
-            assertEquals(0, map.getAnimalsMap().values().stream().mapToInt(HashSet::size).sum());
+            assertEquals(0, map.getAnimalsMap().values().stream().mapToInt(Set::size).sum());
 
             Simulation simulation2 = new Simulation(map, config, true, 10, 1, 10, 1);
 
             removeDeadAnimals.invoke(simulation2);
 
-            assertEquals(10, map.getAnimalsMap().values().stream().mapToInt(HashSet::size).sum());
+            assertEquals(10, map.getAnimalsMap().values().stream().mapToInt(Set::size).sum());
         } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
             e.printStackTrace();
         }
@@ -67,7 +67,7 @@ public class SimulationTest {
             assertTrue(map1.getGrasses().size() < 100);
             assertTrue(map1.getGrasses().size() >= 90);
 
-            assertTrue(map1.getAnimalsMap().values().stream().flatMap(HashSet::stream)
+            assertTrue(map1.getAnimalsMap().values().stream().flatMap(Set::stream)
                     .anyMatch(animal -> animal.getEnergy() > 1));
 
             WorldMap map2 = new WorldMap(10, 10);
@@ -77,7 +77,7 @@ public class SimulationTest {
 
             assertEquals(0, map2.getGrasses().size());
 
-            assertFalse(map2.getAnimalsMap().values().stream().flatMap(HashSet::stream)
+            assertFalse(map2.getAnimalsMap().values().stream().flatMap(Set::stream)
                 .anyMatch(animal -> animal.getEnergy() > 1));
 
         } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
@@ -97,21 +97,21 @@ public class SimulationTest {
 
             breedAnimals.invoke(simulation1);
 
-            assertTrue(map1.getAnimalsMap().values().stream().flatMap((HashSet<Animal> set) -> set.stream()).count() > 101);
-            assertTrue(map1.getAnimalsMap().values().stream().flatMap((HashSet<Animal> set) -> set.stream()).count() <= 151);
+            assertTrue(map1.getAnimalsMap().values().stream().flatMap((Set<Animal> set) -> set.stream()).count() > 101);
+            assertTrue(map1.getAnimalsMap().values().stream().flatMap((Set<Animal> set) -> set.stream()).count() <= 151);
 
-            assertTrue(map1.getAnimalsMap().values().stream().flatMap(HashSet::stream)
+            assertTrue(map1.getAnimalsMap().values().stream().flatMap(Set::stream)
             .anyMatch(animal -> animal.getEnergy() > 1));
 
-            assertTrue(map1.getAnimalsMap().values().stream().flatMap(HashSet::stream)
+            assertTrue(map1.getAnimalsMap().values().stream().flatMap(Set::stream)
             .anyMatch(animal -> animal.getEnergy() == 0));
 
             long countEnergyGreaterThanOne = map1.getAnimalsMap().values().stream()
-                    .flatMap(HashSet::stream)
+                    .flatMap(Set::stream)
                     .filter(animal -> animal.getEnergy() > 1)
                     .count();
             long countEnergyEqualToZero = map1.getAnimalsMap().values().stream()
-                    .flatMap(HashSet::stream)
+                    .flatMap(Set::stream)
                     .filter(animal -> animal.getEnergy() == 0)
                     .count();
             assertTrue(2 * countEnergyGreaterThanOne == countEnergyEqualToZero);

@@ -129,8 +129,8 @@ public class Simulation implements Runnable {
     }
 
     private void breedAnimals() {
-        Map<Vector2d, HashSet<Animal>> animalsByPosition = map.getAnimalsMap();
-        for (HashSet<Animal> positionAnimals : animalsByPosition.values()) {
+        Map<Vector2d, Set<Animal>> animalsByPosition = map.getAnimalsMap();
+        for (Set<Animal> positionAnimals : animalsByPosition.values()) {
             if (positionAnimals.size() < 2) {
                 continue;
             }

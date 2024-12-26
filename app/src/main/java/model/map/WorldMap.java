@@ -10,7 +10,7 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class WorldMap implements MoveConverter {
-    private final ConcurrentHashMap<Vector2d, HashSet<Animal>> animals = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<Vector2d, Set<Animal>> animals = new ConcurrentHashMap<>();
     private final ConcurrentHashMap<Vector2d, Grass> grasses = new ConcurrentHashMap<>();
     private final List<MapChangeListener> listeners = new ArrayList<>();
     private final Vector2d lowerLeft;
@@ -28,7 +28,7 @@ public class WorldMap implements MoveConverter {
     public void place(Animal animal) {
         Vector2d position = animal.getPosition();
         if (!animals.containsKey(position))
-            animals.put(position, new HashSet<Animal>());
+            animals.put(position, Collections.newSetFromMap(new ConcurrentHashMap<>()));
         if (animals.get(position).isEmpty() && !grasses.containsKey(position))
             emptySquareCount--;
         animals.get(position).add(animal);
@@ -91,7 +91,7 @@ public class WorldMap implements MoveConverter {
         return new Pair<>(position, orientation);
     }
 
-    public Map<Vector2d, HashSet<Animal>> getAnimalsMap() {
+    public Map<Vector2d, Set<Animal>> getAnimalsMap() {
         return Collections.unmodifiableMap(animals);
     }
 

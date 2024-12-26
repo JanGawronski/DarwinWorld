@@ -8,6 +8,7 @@
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.control.Spinner?>
 
 <HBox xmlns="http://javafx.com/javafx"
       xmlns:fx="http://javafx.com/fxml"
@@ -17,6 +18,10 @@
     <VBox spacing="10" minWidth="300">
         <Button fx:id="resumeButton" text="Resume simulation" onAction="#resumeSimulation" visible="false" managed="false"/>
         <Button fx:id="stopButton" text="Stop simulation" onAction="#stopSimulation"/>
+        <HBox>
+            <Label text="Simulation days per second: "/>
+            <Spinner fx:id="simulationSpeed" min="1" max="100" initialValue="1" editable="true"  prefWidth="100"/>
+        </HBox>
         <HBox>
             <Label text="Day: "/>
             <Label fx:id="day"/>

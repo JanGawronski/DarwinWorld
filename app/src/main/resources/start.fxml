@@ -21,11 +21,11 @@
     </fx:define>
     <HBox>
         <Label text="Height of a map: "/>
-        <Spinner fx:id="mapHeight" min="1" max="1000" initialValue="10" editable="true"/>
+        <Spinner fx:id="mapHeight" min="1" max="200" initialValue="10" editable="true"/>
     </HBox>
     <HBox>
         <Label text="Width of a map: "/>
-        <Spinner fx:id="mapWidth" min="1" max="1000" initialValue="10" editable="true"/>
+        <Spinner fx:id="mapWidth" min="1" max="200" initialValue="10" editable="true"/>
     </HBox>
     <HBox>
         <Label text="Initial number of plants: "/>
@@ -75,7 +75,7 @@
     </HBox>
     <HBox>
         <Label text="Length of animal genome: "/>
-        <Spinner fx:id="genomeLength" min="1" max="1000" initialValue="10" editable="true"/>
+        <Spinner fx:id="genomeLength" min="1" max="20" initialValue="10" editable="true"/>
     </HBox>
     <HBox>
         <Label text="Save statistics to file: "/>

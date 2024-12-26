@@ -24,6 +24,7 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.text.TextFlow;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.Spinner;
 import javafx.scene.text.Text;
 
 import model.Vector2d;
@@ -56,6 +57,8 @@ public class SimulationPresenter implements MapChangeListener {
     private Button resumeButton;
     @FXML
     private Button stopButton;
+    @FXML
+    private Spinner<Integer> simulationSpeed;
     @FXML
     private Label day;
     @FXML
@@ -320,6 +323,13 @@ public class SimulationPresenter implements MapChangeListener {
                 grassSquares.get(position).setVisible(true);
                 grassSquares.get(position).setFill(Color.DARKGREEN);
             });
+        });
+    }
+
+    @FXML
+    public void initialize() {
+        simulationSpeed.valueProperty().addListener((observable, oldValue, newValue) -> {
+            simulation.setSpeed(newValue.intValue());
         });
     }
 }
