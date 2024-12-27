@@ -55,7 +55,7 @@
         <Button fx:id="showDominantGenomeAnimalsButton" text="Highlight animals with dominant genome" onAction="#showDominantGenomeAnimals" visible="false" managed="false"/>
         <Button fx:id="showPreferredSquaresButton" text="Highlight squares preferred by grass" onAction="#showPreferredSquares" visible="false" managed="false"/>
         <Label fx:id="notFollowingAnimal" text="${'Not following any animal.\nStop simulation and click on animal to follow it.'}"/>
-       <VBox fx:id="followedAnimalBox" visible="false" managed="false">
+        <VBox fx:id="followedAnimalBox" visible="false" managed="false">
             <HBox>
                 <Label text="Followed animal: "/>
                 <Button fx:id="stopFollowingButton" text="Stop following" onAction="#stopFollowingAnimal"/>

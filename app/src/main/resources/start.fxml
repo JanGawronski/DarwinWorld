@@ -11,7 +11,7 @@
 
 <VBox spacing="10" xmlns="http://javafx.com/javafx"
       xmlns:fx="http://javafx.com/fxml"
-      minHeight="600.0" minWidth="500.0"
+      minHeight="620.0" minWidth="500.0"
       fx:controller="presenter.StartPresenter">
     <fx:define>
         <ToggleGroup fx:id="plantGrowthVariant" />
@@ -41,8 +41,8 @@
     </HBox>
     <HBox>
         <Label text="Plant growth variant: "/>
-        <RadioButton fx:id="defaultPlantGrowthVariant" text="Forested equators" toggleGroup="$plantGrowthVariant" selected="true"/>
-        <RadioButton text="Creeping jungle" toggleGroup="$plantGrowthVariant"/>
+        <RadioButton fx:id="forestedEquators" text="Forested equators" toggleGroup="$plantGrowthVariant" selected="true"/>
+        <RadioButton fx:id="creepingJungle" text="Creeping jungle" toggleGroup="$plantGrowthVariant"/>
     </HBox>
     <HBox>
         <Label text="Initial number of animals: "/>
@@ -70,8 +70,8 @@
     </HBox>
     <HBox>
         <Label text="Behaviour variant: "/>
-        <RadioButton fx:id="defaultBehaviourVariant" text="Full predestination" toggleGroup="$behaviourVariant" selected="true"/>
-        <RadioButton text="A bit of madness" toggleGroup="$behaviourVariant"/>
+        <RadioButton fx:id="fullPredestination" text="Full predestination" toggleGroup="$behaviourVariant" selected="true"/>
+        <RadioButton fx:id="bitOfMadness" text="A bit of madness" toggleGroup="$behaviourVariant"/>
     </HBox>
     <HBox>
         <Label text="Length of animal genome: "/>
@@ -81,5 +81,10 @@
         <Label text="Save statistics to file: "/>
         <CheckBox fx:id="saveStats"/>
     </HBox>
+    <HBox>
+        <Button text="Load config" onAction="#loadConfig"/>
+        <Button text="Save config" onAction="#saveConfig"/>
+    </HBox>
+    <Label fx:id="errorLabel" text="Failed to to load configuration" textFill="RED" visible="false" managed="false"/>
     <Button text="Start simulation" onAction="#startSimulation"/>
 </VBox>
