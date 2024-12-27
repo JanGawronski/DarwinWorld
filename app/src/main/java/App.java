@@ -26,6 +26,8 @@ public class App extends Application {
         });
         primaryStage.setScene(new Scene(startRoot));
         primaryStage.setTitle("Start Simulation");
+        primaryStage.minWidthProperty().bind(startRoot.minWidthProperty());
+        primaryStage.minHeightProperty().bind(startRoot.minHeightProperty());
         primaryStage.show();
     }
 
@@ -37,15 +39,10 @@ public class App extends Application {
         Stage primaryStage = new Stage();
         primaryStage.setOnCloseRequest(e -> simulationPresenter.stopSimulation());
         simulationPresenter.startSimulation(config, saveStats);
-        configureStage(primaryStage, simulationRoot);
+        primaryStage.setScene(new Scene(simulationRoot));
+        primaryStage.setTitle("Simulation");
+        primaryStage.minWidthProperty().bind(simulationRoot.minWidthProperty());
+        primaryStage.minHeightProperty().bind(simulationRoot.minHeightProperty());
         primaryStage.show();
-    }
-
-    private void configureStage(Stage primaryStage, HBox viewRoot) {
-        var scene = new Scene(viewRoot);
-        primaryStage.setScene(scene);
-        primaryStage.setTitle("Simulation app");
-        primaryStage.minWidthProperty().bind(viewRoot.minWidthProperty());
-        primaryStage.minHeightProperty().bind(viewRoot.minHeightProperty());
     }
 }
