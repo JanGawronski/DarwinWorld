@@ -7,11 +7,11 @@ import model.elements.animal.Animal;
 import model.elements.grass.Grass;
 
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 public class WorldMap implements MoveConverter {
-    private final ConcurrentHashMap<Vector2d, Set<Animal>> animals = new ConcurrentHashMap<>();
-    private final ConcurrentHashMap<Vector2d, Grass> grasses = new ConcurrentHashMap<>();
+    private final HashMap<Vector2d, Set<Animal>> animals = new HashMap<>();
+    private final HashMap<Vector2d, Grass> grasses = new HashMap<>();
     private final Vector2d lowerLeft;
     private final Vector2d upperRight;
     private int emptySquareCount;
@@ -27,7 +27,7 @@ public class WorldMap implements MoveConverter {
     public void place(Animal animal) {
         Vector2d position = animal.getPosition();
         if (!animals.containsKey(position))
-            animals.put(position, Collections.newSetFromMap(new ConcurrentHashMap<>()));
+            animals.put(position, Collections.synchronizedSet(new HashSet<>()));
         if (animals.get(position).isEmpty() && !grasses.containsKey(position))
             emptySquareCount--;
         animals.get(position).add(animal);
@@ -60,8 +60,6 @@ public class WorldMap implements MoveConverter {
             emptySquareCount++;
     }
 
-
-
     @Override
     public Pair<Vector2d, MapDirection> convert(Vector2d position, MapDirection orientation) {
         if (position.y() < lowerLeft.y() || position.y() > upperRight.y()) {
@@ -75,12 +73,25 @@ public class WorldMap implements MoveConverter {
         return new Pair<>(position, orientation);
     }
 
-    public Map<Vector2d, Set<Animal>> getAnimalsMap() {
-        return Collections.unmodifiableMap(animals);
+    public Set<Vector2d> getAnimalPositions() {
+        return animals.keySet().stream().filter(position -> !animals.get(position).isEmpty())
+                .collect(Collectors.toSet());
     }
 
     public Set<Animal> getAnimalsAt(Vector2d position) {
         return Collections.unmodifiableSet(animals.getOrDefault(position, new HashSet<>()));
+    }
+
+    public boolean isAnimalAt(Vector2d position) {
+        return animals.containsKey(position) && !animals.get(position).isEmpty();
+    }
+
+    public Animal getTopAnimalAt(Vector2d position) {
+        synchronized (animals.get(position)) {
+            if (!isAnimalAt(position))
+                throw new IllegalArgumentException("There is no animal at " + position);
+            return Collections.max(animals.get(position));
+        }
     }
 
     public Set<Grass> getGrasses() {
@@ -91,7 +102,7 @@ public class WorldMap implements MoveConverter {
         return Collections.unmodifiableSet(grasses.keySet());
     }
 
-    public boolean isGrassOn(Vector2d position) {
+    public boolean isGrassAt(Vector2d position) {
         return grasses.containsKey(position);
     }
 

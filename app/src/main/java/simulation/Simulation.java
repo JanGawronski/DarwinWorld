@@ -131,8 +131,8 @@ public class Simulation implements Runnable {
     }
 
     private void breedAnimals() {
-        Map<Vector2d, Set<Animal>> animalsByPosition = map.getAnimalsMap();
-        for (Set<Animal> positionAnimals : animalsByPosition.values()) {
+        for (Vector2d position : map.getAnimalPositions()) {
+            Set<Animal> positionAnimals = map.getAnimalsAt(position);
             if (positionAnimals.size() < 2) {
                 continue;
             }
@@ -168,7 +168,7 @@ public class Simulation implements Runnable {
         synchronized (deadAnimals) {
             averageLifeSpan = deadAnimals.stream().mapToDouble(Animal::getLifeSpan).average().orElse(0);
         }
-        int grassCount = map.getGrasses().size();
+        int grassCount = map.getGrassesPositions().size();
         int emptySquareCount = map.getEmptySquareCount();
         Map<Genome, Integer> genomeIntegerHashMap = Collections.unmodifiableMap(genomePopularity);
         return new SimulationStats(day, animalCount, grassCount, emptySquareCount, genomeIntegerHashMap, averageEnergy, averageLifeSpan, averageChildrenCount);

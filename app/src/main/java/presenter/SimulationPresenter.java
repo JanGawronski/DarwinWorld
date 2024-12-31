@@ -211,14 +211,11 @@ public class SimulationPresenter implements SimulationChangeListener {
 
     private void updateMapGrid(WorldMap map) {
         for (Vector2d position : animalCircles.keySet()) {
-            grassSquares.get(position).setVisible(map.isGrassOn(position));
+            grassSquares.get(position).setVisible(map.isGrassAt(position));
             grassSquares.get(position).setFill(Color.GREEN);
-            Set<Animal> animals = map.getAnimalsAt(position);
-            animalCircles.get(position).setVisible(!animals.isEmpty());
-            if (!animals.isEmpty()) {
-                Animal animal = Collections.max(animals);
-                animalCircles.get(position).setFill(energyColor[Math.min(animal.getEnergy(), 255)]);
-            }
+            animalCircles.get(position).setVisible(map.isAnimalAt(position));
+            if (map.isAnimalAt(position))
+                animalCircles.get(position).setFill(energyColor[Math.min(map.getTopAnimalAt(position).getEnergy(), 255)]);
         }
         if (followedAnimal != null && followedAnimal.isAlive())
             animalCircles.get(followedAnimal.getPosition()).setFill(Color.DARKVIOLET);
