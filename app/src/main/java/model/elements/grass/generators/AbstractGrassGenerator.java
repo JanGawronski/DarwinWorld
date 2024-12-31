@@ -12,7 +12,7 @@ import java.util.concurrent.ThreadLocalRandom;
 
 public abstract class AbstractGrassGenerator implements GrassGenerator {
     protected final WorldMap map;
-    protected final List<Vector2d> places;
+    private final List<Vector2d> places;
 
     public AbstractGrassGenerator(WorldMap map) {
         this.map = map;

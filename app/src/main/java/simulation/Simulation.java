@@ -19,8 +19,8 @@ import java.util.concurrent.Executors;
 
 
 public class Simulation implements Runnable {
-    private final Set<Animal> animals = Collections.newSetFromMap(new ConcurrentHashMap<>());
-    private final Set<Animal> deadAnimals = Collections.newSetFromMap(new ConcurrentHashMap<>());
+    private final Set<Animal> animals = Collections.synchronizedSet(new HashSet<>());
+    private final Set<Animal> deadAnimals = Collections.synchronizedSet(new HashSet<>());
     private final WorldMap map;
     private final GrassGenerator grassGenerator;
     private final int grassGrowthRate;
@@ -28,6 +28,7 @@ public class Simulation implements Runnable {
     private int day = 0;
     private ExecutorService executor;
     private volatile int speed = 1;
+    private final List<SimulationChangeListener> listeners = new ArrayList<>();
 
     public Simulation(WorldMap map, AnimalConfigData animalConfigData, boolean defaultGrassGenerator,
                       int initialGrassCount, int grassGrowthRate, int initialAnimalCount, int initialEnergy) {
@@ -67,7 +68,8 @@ public class Simulation implements Runnable {
             growGrass();
 
             day++;
-            map.notifyMapChanged();
+            
+            notifyListeners();
 
             try {
                 Thread.sleep(1000 / speed);
@@ -155,13 +157,20 @@ public class Simulation implements Runnable {
     }
 
     public SimulationStats getStats() {
-        int animalCount = animals.size();
+        int animalCount;
+        double averageEnergy, averageChildrenCount;
+        synchronized (animals) {
+            animalCount = animals.size();
+            averageEnergy = animals.stream().mapToDouble(Animal::getEnergy).average().orElse(0);
+            averageChildrenCount = animals.stream().mapToDouble(Animal::getChildrenCount).average().orElse(0);
+        }
+        double averageLifeSpan;
+        synchronized (deadAnimals) {
+            averageLifeSpan = deadAnimals.stream().mapToDouble(Animal::getLifeSpan).average().orElse(0);
+        }
         int grassCount = map.getGrasses().size();
         int emptySquareCount = map.getEmptySquareCount();
         Map<Genome, Integer> genomeIntegerHashMap = Collections.unmodifiableMap(genomePopularity);
-        double averageEnergy = animals.stream().mapToDouble(Animal::getEnergy).average().orElse(0);
-        double averageLifeSpan = deadAnimals.stream().mapToDouble(Animal::getLifeSpan).average().orElse(0);
-        double averageChildrenCount = animals.stream().mapToDouble(Animal::getChildrenCount).average().orElse(0);
         return new SimulationStats(day, animalCount, grassCount, emptySquareCount, genomeIntegerHashMap, averageEnergy, averageLifeSpan, averageChildrenCount);
     }
 
@@ -172,5 +181,17 @@ public class Simulation implements Runnable {
     public List<Animal> getPopularAnimals() {
         Optional<Genome> bestGenome = genomePopularity.entrySet().stream().max(Map.Entry.comparingByValue()).map(Map.Entry::getKey);
         return bestGenome.map(genome -> animals.stream().filter(animal -> animal.getGenome().equals(genome)).toList()).orElseGet(List::of);
+    }
+
+    public WorldMap getMap() {
+        return map;
+    }
+    
+    private void notifyListeners() {
+        listeners.forEach(listener -> listener.simulationChanged(this));
+    }
+
+    public void addListener(SimulationChangeListener listener) {
+        listeners.add(listener);
     }
 }

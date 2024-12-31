@@ -12,7 +12,6 @@ import java.util.concurrent.ConcurrentHashMap;
 public class WorldMap implements MoveConverter {
     private final ConcurrentHashMap<Vector2d, Set<Animal>> animals = new ConcurrentHashMap<>();
     private final ConcurrentHashMap<Vector2d, Grass> grasses = new ConcurrentHashMap<>();
-    private final List<MapChangeListener> listeners = new ArrayList<>();
     private final Vector2d lowerLeft;
     private final Vector2d upperRight;
     private int emptySquareCount;
@@ -61,21 +60,6 @@ public class WorldMap implements MoveConverter {
             emptySquareCount++;
     }
 
-    public void addListener(MapChangeListener listener) {
-        listeners.add(listener);
-    }
-
-
-    public void removeListener(MapChangeListener listener) {
-        listeners.remove(listener);
-    }
-
-
-    public void notifyMapChanged() {
-        for (MapChangeListener listener : listeners) {
-            listener.mapChanged(this);
-        }
-    }
 
 
     @Override
