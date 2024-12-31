@@ -37,7 +37,7 @@
     </HBox>
     <HBox>
         <Label text="Number of plants growing each day: "/>
-        <Spinner fx:id="dailyPlantGrowth" min="0" max="1000" initialValue="10" editable="true"/>
+        <Spinner fx:id="dailyPlantGrowth" min="0" max="100" initialValue="10" editable="true"/>
     </HBox>
     <HBox>
         <Label text="Plant growth variant: "/>

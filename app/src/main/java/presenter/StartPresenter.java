@@ -81,12 +81,14 @@ public class StartPresenter {
             @Override
             public void changed(ObservableValue<? extends Integer> observable, Integer oldValue, Integer newValue) {
                 initialPlants.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(0, newValue * mapWidth.getValue(), Math.min(initialPlants.getValue(), newValue * mapWidth.getValue())));
+                dailyPlantGrowth.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(0, newValue * mapWidth.getValue(), Math.min(dailyPlantGrowth.getValue(), newValue * mapWidth.getValue())));
             }
         });
         mapWidth.valueProperty().addListener(new ChangeListener<Integer>() {
             @Override
             public void changed(ObservableValue<? extends Integer> observable, Integer oldValue, Integer newValue) {
                 initialPlants.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(0, newValue * mapHeight.getValue(), Math.min(initialPlants.getValue(), newValue * mapHeight.getValue())));
+                dailyPlantGrowth.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(0, newValue * mapHeight.getValue(), Math.min(dailyPlantGrowth.getValue(), newValue * mapHeight.getValue())));
             }
         });
         saturationEnergy.valueProperty().addListener(new ChangeListener<Integer>() {
