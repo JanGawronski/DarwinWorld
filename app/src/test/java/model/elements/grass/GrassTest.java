@@ -3,7 +3,7 @@ package model.elements.grass;
 import model.Vector2d;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class GrassTest {
     @Test

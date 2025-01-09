@@ -40,7 +40,7 @@ public class AnimalTest {
         List<Animal> sortedAnimalList = new ArrayList<>(animalList);
         Collections.sort(sortedAnimalList);
         assertEquals(List.of(animal1, animal2, animal3, animal4, animal5), sortedAnimalList.reversed());
-        
+
         Animal animal = Collections.max(Set.of(animal1, animal2, animal3, animal4, animal5));
         assertEquals(animal, animal1);
     }
@@ -109,7 +109,7 @@ public class AnimalTest {
         Animal a1 = new Animal(c1, 100, p);
         Animal a2 = new Animal(c2, 0, p);
 
-        for (int i=0;i<20;i++)
+        for (int i = 0; i < 20; i++)
             a1.eat();
         a2.eat();
 
