@@ -1,22 +1,17 @@
 package presenter;
 
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
+import javafx.fxml.FXML;
+import javafx.scene.control.*;
+import javafx.stage.FileChooser;
+import org.json.JSONObject;
+import simulation.SimulationConfig;
+
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.function.BiConsumer;
-import org.json.JSONObject;
-
-import javafx.beans.value.ObservableValue;
-import javafx.fxml.FXML;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.Label;
-import javafx.scene.control.RadioButton;
-import javafx.scene.control.Spinner;
-import javafx.scene.control.SpinnerValueFactory;
-import javafx.stage.FileChooser;
-import javafx.beans.value.ChangeListener;
-
-import simulation.SimulationConfig;
 
 public class StartPresenter {
     private BiConsumer<SimulationConfig, Boolean> showSimulationWindowHandler;
@@ -105,7 +100,7 @@ public class StartPresenter {
 
     @FXML
     private void startSimulation() throws IOException {
-        SimulationConfig config = new SimulationConfig(mapHeight.getValue(), mapWidth.getValue(), 
+        SimulationConfig config = new SimulationConfig(mapHeight.getValue(), mapWidth.getValue(),
                 initialPlants.getValue(),
                 plantEnergy.getValue(), forestedEquators.isSelected(), dailyPlantGrowth.getValue(),
                 initialAnimals.getValue(),

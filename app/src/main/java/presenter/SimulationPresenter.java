@@ -1,52 +1,47 @@
 package presenter;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.io.BufferedWriter;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.Collections;
-import java.util.Set;
-import java.util.stream.Collectors;
-
 import javafx.application.Platform;
 import javafx.fxml.FXML;
-import javafx.scene.layout.ColumnConstraints;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Priority;
-import javafx.scene.layout.RowConstraints;
-import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
-import javafx.scene.shape.Circle;
-import javafx.scene.shape.Rectangle;
-import javafx.scene.text.TextFlow;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.Spinner;
+import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
+import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
-
+import javafx.scene.text.TextFlow;
 import model.Vector2d;
+import model.elements.animal.Animal;
+import model.elements.animal.AnimalStats;
+import model.elements.animal.Genome;
 import model.map.WorldMap;
 import simulation.Simulation;
 import simulation.SimulationChangeListener;
 import simulation.SimulationConfig;
 import simulation.SimulationStats;
-import model.elements.animal.Animal;
-import model.elements.animal.AnimalStats;
-import model.elements.animal.Genome;
+
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 public class SimulationPresenter implements SimulationChangeListener {
-    private Simulation simulation;
-    private HashMap<Vector2d, Circle> animalCircles = new HashMap<>();
-    private HashMap<Vector2d, Rectangle> grassSquares = new HashMap<>();
     private static final Color[] energyColor = new Color[256];
+
     static {
         for (int i = 0; i < 256; i++) {
             energyColor[i] = Color.rgb(255 - i, i, 0);
         }
     }
+
+    private Simulation simulation;
+    private final HashMap<Vector2d, Circle> animalCircles = new HashMap<>();
+    private final HashMap<Vector2d, Rectangle> grassSquares = new HashMap<>();
     private Animal followedAnimal;
     private boolean saveStats;
     private BufferedWriter writer;
@@ -109,7 +104,7 @@ public class SimulationPresenter implements SimulationChangeListener {
                 writer = new BufferedWriter(new FileWriter("simulation_" + System.currentTimeMillis() + ".csv"));
                 writer.write("day,animalsCount,grassCount,emptySquareCount,averageEnergy,averageLifespan,averageChildrenCount,topGenomes\n");
             } catch (IOException e) {
-                saveStats = false;
+                this.saveStats = false;
                 e.printStackTrace();
             }
         }
@@ -258,7 +253,7 @@ public class SimulationPresenter implements SimulationChangeListener {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        
+
     }
 
     private void updateAnimalStats() {
