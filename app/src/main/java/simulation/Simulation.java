@@ -65,10 +65,15 @@ public class Simulation implements Runnable {
         notifyListeners();
     }
 
+    private boolean isRunning() {
+        return executor != null && !executor.isShutdown();
+    }
+
     public void start() {
-        if (!(executor == null || executor.isTerminated() || executor.isShutdown()))
+        if (isRunning())
             throw new IllegalStateException("Simulation is not stopped");
-        simulate();
+        executor = Executors.newSingleThreadScheduledExecutor();
+        executor.scheduleWithFixedDelay(this, 500 / speed, 1000 / speed, TimeUnit.MILLISECONDS);
     }
 
     public void stop() {
@@ -83,18 +88,12 @@ public class Simulation implements Runnable {
         }
     }
 
-    private synchronized void simulate() {
-        if (executor != null && !executor.isShutdown()) {
-            executor.shutdownNow();
-        }
-        executor = Executors.newSingleThreadScheduledExecutor();
-        executor.scheduleWithFixedDelay(this, 500 / speed, 1000 / speed, TimeUnit.MILLISECONDS);
-    }
 
     public void setSpeed(int speed) {
         this.speed = speed;
-        if (executor != null && !executor.isShutdown()) {
-            simulate();
+        if (isRunning()) {
+            executor.shutdownNow();
+            start();
         }
     }
 
