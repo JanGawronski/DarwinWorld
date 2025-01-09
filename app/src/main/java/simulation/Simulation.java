@@ -11,11 +11,7 @@ import model.elements.grass.generators.GrassGenerator;
 import model.map.WorldMap;
 
 import java.util.*;
-import java.util.concurrent.ThreadLocalRandom;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.concurrent.*;
 
 
 public class Simulation implements Runnable {
@@ -26,7 +22,7 @@ public class Simulation implements Runnable {
     private final int grassGrowthRate;
     private final ConcurrentHashMap<Genome, Integer> genomePopularity = new ConcurrentHashMap<>();
     private int day = 0;
-    private ExecutorService executor;
+    private ScheduledExecutorService executor;
     private volatile int speed = 1;
     private final List<SimulationChangeListener> listeners = new ArrayList<>();
 
@@ -60,43 +56,46 @@ public class Simulation implements Runnable {
 
     @Override
     public void run() {
-        while (true) {
-            removeDeadAnimals();
-            moveAnimals();
-            eatGrass();
-            breedAnimals();
-            growGrass();
-
-            day++;
-            
-            notifyListeners();
-
-            try {
-                Thread.sleep(1000 / speed);
-            } catch (InterruptedException e) {
-                return;
-            }
-        }
+        removeDeadAnimals();
+        moveAnimals();
+        eatGrass();
+        breedAnimals();
+        growGrass();
+        day++;
+        notifyListeners();
     }
 
     public void start() {
         if (!(executor == null || executor.isTerminated() || executor.isShutdown()))
             throw new IllegalStateException("Simulation is not stopped");
-        executor = Executors.newSingleThreadExecutor();
-        executor.submit(this);
+        simulate();
     }
 
     public void stop() {
+        executor.shutdown();
         try {
-            executor.shutdownNow();
-            executor.awaitTermination(1, TimeUnit.SECONDS);
+            if (!executor.awaitTermination(1, TimeUnit.SECONDS)) {
+                executor.shutdownNow();
+            }
         } catch (InterruptedException e) {
-            // do nothing
+            executor.shutdownNow();
+            Thread.currentThread().interrupt();
         }
+    }
+
+    private synchronized void simulate() {
+        if (executor != null && !executor.isShutdown()) {
+            executor.shutdownNow();
+        }
+        executor = Executors.newSingleThreadScheduledExecutor();
+        executor.scheduleWithFixedDelay(this, 500 / speed, 1000 / speed, TimeUnit.MILLISECONDS);
     }
 
     public void setSpeed(int speed) {
         this.speed = speed;
+        if (executor != null && !executor.isShutdown()) {
+            simulate();
+        }
     }
 
     private void removeDeadAnimals() {
