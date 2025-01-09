@@ -88,7 +88,7 @@ public class Simulation implements Runnable {
             executor.shutdownNow();
         }
         executor = Executors.newSingleThreadScheduledExecutor();
-        executor.scheduleWithFixedDelay(this, 1000 / speed, 1000 / speed, TimeUnit.MILLISECONDS);
+        executor.scheduleWithFixedDelay(this, 500 / speed, 1000 / speed, TimeUnit.MILLISECONDS);
     }
 
     public void setSpeed(int speed) {
