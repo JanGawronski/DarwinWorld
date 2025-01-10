@@ -105,7 +105,7 @@ public class Simulation implements Runnable {
                 deadAnimals.add(animal);
                 animal.setDeathDay(day);
             }
-        animals.removeIf(animal -> animal.getEnergy() == 0);
+        animals.removeIf(animal -> !animal.isAlive());
     }
 
     private void moveAnimals() {
