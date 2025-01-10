@@ -4,7 +4,6 @@ import model.AnimalConfigData;
 import model.MapDirection;
 import model.Pair;
 import model.Vector2d;
-import model.elements.WorldElement;
 import model.map.MoveConverter;
 
 import java.util.Comparator;
@@ -12,7 +11,7 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 
-public class Animal implements WorldElement, Comparable<Animal> {
+public class Animal implements Comparable<Animal> {
     private final AnimalConfigData config;
     private final Genome genome;
     private final Pair<Animal, Animal> parents;
@@ -104,7 +103,6 @@ public class Animal implements WorldElement, Comparable<Animal> {
         return orientation;
     }
 
-    @Override
     public Vector2d getPosition() {
         return position;
     }

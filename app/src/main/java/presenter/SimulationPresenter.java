@@ -324,7 +324,7 @@ public class SimulationPresenter implements SimulationChangeListener {
     @FXML
     public void initialize() {
         simulationSpeed.valueProperty().addListener((observable, oldValue, newValue) -> {
-            simulation.setSpeed(newValue.intValue());
+            simulation.setSpeed(newValue);
         });
     }
 }
