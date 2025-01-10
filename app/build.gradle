@@ -42,7 +42,7 @@ java {
 
 application {
     // Define the main class for the application.
-    mainClass = 'darwinworld.App'
+    mainClass = 'Main'
 }
 
 tasks.named('test') {
