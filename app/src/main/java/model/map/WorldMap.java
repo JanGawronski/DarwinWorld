@@ -98,7 +98,7 @@ public class WorldMap implements MoveConverter {
     }
 
     public Set<Grass> getGrasses() {
-        return Collections.unmodifiableSet(new HashSet<>(grasses.values()));
+        return Set.copyOf(grasses.values());
     }
 
     public Set<Vector2d> getGrassesPositions() {
