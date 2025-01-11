@@ -44,7 +44,7 @@ public class SimulationPresenter implements SimulationChangeListener {
     private final HashMap<Vector2d, Rectangle> grassSquares = new HashMap<>();
     private Animal followedAnimal;
     private boolean saveStats;
-    private BufferedWriter writer;
+    private String statsFileName;
     @FXML
     private GridPane mapGrid;
     @FXML
@@ -99,9 +99,9 @@ public class SimulationPresenter implements SimulationChangeListener {
     public void startSimulation(SimulationConfig config, boolean saveStats) {
         drawGrid(config.map());
         this.saveStats = saveStats;
+        this.statsFileName = "simulation_" + System.currentTimeMillis() + ".csv";
         if (saveStats) {
-            try {
-                writer = new BufferedWriter(new FileWriter("simulation_" + System.currentTimeMillis() + ".csv"));
+            try (BufferedWriter writer = new BufferedWriter(new FileWriter(statsFileName))) {
                 writer.write("day,animalsCount,grassCount,emptySquareCount,averageEnergy,averageLifespan,averageChildrenCount,topGenomes\n");
             } catch (IOException e) {
                 this.saveStats = false;
@@ -235,7 +235,7 @@ public class SimulationPresenter implements SimulationChangeListener {
     }
 
     private void saveStats(SimulationStats simulationStats) {
-        try {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(statsFileName, true))) {
             writer.write(simulationStats.day() + ",");
             writer.write(simulationStats.animalsCount() + ",");
             writer.write(simulationStats.grassCount() + ",");
@@ -252,6 +252,7 @@ public class SimulationPresenter implements SimulationChangeListener {
             writer.flush();
         } catch (IOException e) {
             e.printStackTrace();
+            saveStats = false;
         }
 
     }
