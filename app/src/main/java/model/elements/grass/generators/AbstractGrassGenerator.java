@@ -11,10 +11,10 @@ import java.util.concurrent.ThreadLocalRandom;
 
 public abstract class AbstractGrassGenerator implements GrassGenerator {
     protected final WorldMap map;
-    protected final List<Vector2d> preferred = new ArrayList<>();
-    protected final List<Vector2d> notPreferred = new ArrayList<>();
-    protected final HashMap<Vector2d, Integer> preferredIndices = new HashMap<>();
-    protected final HashMap<Vector2d, Integer> notPreferredIndices = new HashMap<>();
+    private final List<Vector2d> preferred = new ArrayList<>();
+    private final List<Vector2d> notPreferred = new ArrayList<>();
+    private final HashMap<Vector2d, Integer> preferredIndices = new HashMap<>();
+    private final HashMap<Vector2d, Integer> notPreferredIndices = new HashMap<>();
 
     public AbstractGrassGenerator(WorldMap map) {
         this.map = map;
