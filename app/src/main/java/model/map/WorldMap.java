@@ -11,6 +11,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.ArrayList;
+import java.util.List;
 
 public class WorldMap implements MoveConverter {
     private final HashMap<Vector2d, Set<Animal>> animals = new HashMap<>();
@@ -18,6 +20,7 @@ public class WorldMap implements MoveConverter {
     private final Vector2d lowerLeft;
     private final Vector2d upperRight;
     private int emptySquareCount;
+    private final List<MapChangeListener> listeners = new ArrayList<>();
 
     public WorldMap(int height, int width) {
         if (width <= 0 || height <= 0)
@@ -52,6 +55,7 @@ public class WorldMap implements MoveConverter {
         grasses.put(position, grass);
         if (!animals.containsKey(position) || animals.get(position).isEmpty())
             emptySquareCount--;
+        mapChanged(position);
     }
 
     public void remove(Grass grass) {
@@ -61,6 +65,7 @@ public class WorldMap implements MoveConverter {
         grasses.remove(position);
         if (!animals.containsKey(position) || animals.get(position).isEmpty())
             emptySquareCount++;
+        mapChanged(position);
     }
 
     @Override
@@ -117,8 +122,24 @@ public class WorldMap implements MoveConverter {
         return upperRight.y() + 1;
     }
 
+    public boolean isBounds(Vector2d position) {
+        return position.follows(lowerLeft) && position.precedes(upperRight);
+    }
+
     public int getEmptySquareCount() {
         return emptySquareCount;
+    }
+
+    public void addListener(MapChangeListener listener) {
+        listeners.add(listener);
+    }
+
+    public void removeListener(MapChangeListener listener) {
+        listeners.remove(listener);
+    }
+
+    public void mapChanged(Vector2d position) {
+        listeners.forEach(listener -> listener.mapChanged(this, position));
     }
 
 }

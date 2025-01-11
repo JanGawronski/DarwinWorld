@@ -13,10 +13,26 @@ public class CreepingJungle extends AbstractGrassGenerator {
     protected boolean isPreferred(Vector2d position) {
         for (MapDirection mapDirection : MapDirection.values()) {
             Vector2d neighbour = position.add(mapDirection.toMovementVector());
-            if (map.isGrassAt(neighbour))
+            if (map.isBounds(position) && map.isGrassAt(neighbour))
                 return true;
         }
         return false;
     }
 
+    @Override
+    public void mapChanged(WorldMap map, Vector2d position) {
+        for (MapDirection mapDirection : MapDirection.values()) {
+            Vector2d neighbour = position.add(mapDirection.toMovementVector());
+            if (map.isBounds(neighbour) && !map.isGrassAt(neighbour))
+                remove(neighbour);
+        }
+
+        super.mapChanged(map, position);
+        
+        for (MapDirection mapDirection : MapDirection.values()) {
+            Vector2d neighbour = position.add(mapDirection.toMovementVector());
+            if (map.isBounds(position) && !map.isGrassAt(neighbour))
+                add(neighbour);
+        }
+    }
 }

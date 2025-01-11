@@ -35,9 +35,8 @@ public class Simulation implements Runnable {
         if (initialGrassCount > map.getHeight() * map.getWidth())
             throw new IllegalArgumentException("Initial grass count cannot exceed map size");
 
-        Set<Grass> grasses = grassGenerator.generateGrass(initialGrassCount);
-        for (Grass grass : grasses)
-            map.place(grass);
+        for (int i = 0; i < initialGrassCount; i++)
+            map.place(grassGenerator.generateGrass());
 
         for (int i = 0; i < initialAnimalCount; i++) {
             Vector2d position = new Vector2d(ThreadLocalRandom.current().nextInt(map.getWidth()),
@@ -148,10 +147,9 @@ public class Simulation implements Runnable {
     }
 
     private void growGrass() {
-        Set<Grass> grasses = grassGenerator
-                .generateGrass(Math.min(grassGrowthRate, map.getHeight() * map.getWidth() - map.getGrasses().size()));
-        for (Grass grass : grasses)
-            map.place(grass);
+        int toGenerate = Math.min(grassGrowthRate, map.getHeight() * map.getWidth() - map.getGrasses().size());
+        for (int i = 0; i < toGenerate; i++)
+            map.place(grassGenerator.generateGrass());
     }
 
     public SimulationStats getStats() {
@@ -191,5 +189,9 @@ public class Simulation implements Runnable {
 
     public void addListener(SimulationChangeListener listener) {
         listeners.add(listener);
+    }
+
+    public void removeListener(SimulationChangeListener listener) {
+        listeners.remove(listener);
     }
 }

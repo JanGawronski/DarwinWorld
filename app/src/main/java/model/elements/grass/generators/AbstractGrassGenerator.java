@@ -5,54 +5,38 @@ import model.elements.grass.Grass;
 import model.map.WorldMap;
 
 import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
 
 public abstract class AbstractGrassGenerator implements GrassGenerator {
     protected final WorldMap map;
-    private final List<Vector2d> places;
+    protected final List<Vector2d> preferred = new ArrayList<>();
+    protected final List<Vector2d> notPreferred = new ArrayList<>();
+    protected final HashMap<Vector2d, Integer> preferredIndices = new HashMap<>();
+    protected final HashMap<Vector2d, Integer> notPreferredIndices = new HashMap<>();
 
     public AbstractGrassGenerator(WorldMap map) {
         this.map = map;
-        this.places = new ArrayList<>();
+        map.addListener(this);
         for (int x = 0; x < map.getWidth(); x++)
             for (int y = 0; y < map.getHeight(); y++) {
-                places.add(new Vector2d(x, y));
+                Vector2d position = new Vector2d(x, y);
+                if (isPreferred(position)) {
+                    preferred.add(position);
+                    preferredIndices.put(position, preferred.size() - 1);
+                } else {
+                    notPreferred.add(position);
+                    notPreferredIndices.put(position, notPreferred.size() - 1);
+                }
             }
     }
 
     @Override
-    public Set<Grass> generateGrass(int count) {
-        if (count > map.getWidth() * map.getHeight() - map.getGrasses().size())
-            throw new IllegalArgumentException("There is not enough space for " + count + " grasses");
-        if (count < 0)
-            throw new IllegalArgumentException("Count must be non-negative");
-
-        List<Vector2d> preferredPositions = new ArrayList<>();
-        List<Vector2d> notPreferredPositions = new ArrayList<>();
-        Set<Vector2d> grassesPositions = map.getGrassesPositions();
-        for (Vector2d position : places) {
-            if (!grassesPositions.contains(position))
-                if (isPreferred(position))
-                    preferredPositions.add(position);
-                else
-                    notPreferredPositions.add(position);
-        }
-
-        HashSet<Grass> grasses = new HashSet<>();
-
-        List<Vector2d> positions;
-        for (int i = 0; i < count; i++) {
-            positions = selectPositions(preferredPositions, notPreferredPositions);
-
-            int index = ThreadLocalRandom.current().nextInt(positions.size());
-            grasses.add(new Grass(positions.get(index)));
-            positions.set(index, positions.getLast());
-            positions.removeLast();
-        }
-        return grasses;
+    public Grass generateGrass() {
+        List<Vector2d> positions = selectPositions(preferred, notPreferred);
+        int index = ThreadLocalRandom.current().nextInt(positions.size());
+        return new Grass(positions.get(index));
     }
 
     private List<Vector2d> selectPositions(List<Vector2d> preferred, List<Vector2d> notPreferred) {
@@ -65,17 +49,52 @@ public abstract class AbstractGrassGenerator implements GrassGenerator {
         return notPreferred;
     }
 
-    protected abstract boolean isPreferred(Vector2d position);
+    @Override
+    public void mapChanged(WorldMap map, Vector2d position) {
+        if (map.isGrassAt(position))
+            remove(position);
+        else
+            add(position);
+    }
+
+    protected void add(Vector2d position) {
+        List<Vector2d> positions;
+        HashMap<Vector2d, Integer> indices;
+        if (isPreferred(position)) {
+            positions = preferred;
+            indices = preferredIndices;
+        } else {
+            positions = notPreferred;
+            indices = notPreferredIndices;
+        }
+        
+        positions.add(position);
+        indices.put(position, positions.size() - 1);
+    }
+
+    protected void remove(Vector2d position) {
+        List<Vector2d> positions;
+        HashMap<Vector2d, Integer> indices;
+        if (preferredIndices.containsKey(position)) {
+            positions = preferred;
+            indices = preferredIndices;
+        } else {
+            positions = notPreferred;
+            indices = notPreferredIndices;
+        }
+
+        int index = indices.get(position);
+        Vector2d last = positions.getLast();
+        positions.set(index, last);
+        indices.put(last, index);
+        positions.removeLast();
+        indices.remove(position);
+    }
 
     @Override
     public List<Vector2d> getPreferred() {
-        List<Vector2d> preferredPositions = new ArrayList<>();
-        Set<Vector2d> grassesPositions = map.getGrassesPositions();
-        for (Vector2d position : places)
-            if (!grassesPositions.contains(position))
-                if (isPreferred(position))
-                    preferredPositions.add(position);
-
-        return preferredPositions;
+        return new ArrayList<>(preferred);
     }
+
+    protected abstract boolean isPreferred(Vector2d position);
 }
