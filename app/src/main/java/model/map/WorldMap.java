@@ -122,7 +122,7 @@ public class WorldMap implements MoveConverter {
         return upperRight.y() + 1;
     }
 
-    public boolean isBounds(Vector2d position) {
+    public boolean inBounds(Vector2d position) {
         return position.follows(lowerLeft) && position.precedes(upperRight);
     }
 

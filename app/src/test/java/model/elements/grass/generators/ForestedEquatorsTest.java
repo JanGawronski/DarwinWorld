@@ -31,11 +31,9 @@ public class ForestedEquatorsTest {
         WorldMap map = new WorldMap(10, 10);
         ForestedEquators forestedEquators = new ForestedEquators(map);
 
-        Vector2d lowerLeft = new Vector2d(0, 0);
-        Vector2d upperRight = new Vector2d(9, 9);
         for (int i = 0; i < 100; i++) {
             Vector2d position = forestedEquators.generateGrass().getPosition();
-            assertTrue(position.precedes(upperRight) && position.follows(lowerLeft));
+            assertTrue(map.inBounds(position));
         }
 
     }
