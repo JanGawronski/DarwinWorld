@@ -31,6 +31,10 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 public class SimulationPresenter implements SimulationChangeListener {
+    private static final Color grassColor = Color.GREEN;
+    private static final Color preferredColor = Color.DARKGREEN;
+    private static final Color dominantGenomeColor = Color.BLUE;
+    private static final Color followedAnimalColor = Color.DARKVIOLET;
     private static final Color[] energyColor = new Color[256];
 
     static {
@@ -110,6 +114,7 @@ public class SimulationPresenter implements SimulationChangeListener {
         }
         this.simulation = new Simulation(config);
         simulation.addListener(this);
+        simulationChanged(simulation);
         simulation.start();
     }
 
@@ -172,13 +177,13 @@ public class SimulationPresenter implements SimulationChangeListener {
             for (int j = 0; j < map.getHeight(); j++) {
                 StackPane cell = new StackPane();
                 Rectangle square = new Rectangle();
-                square.setFill(Color.GREEN);
+                square.setFill(grassColor);
                 square.setVisible(false);
                 cell.setMinWidth(1);
                 cell.setMinHeight(1);
 
                 Circle circle = new Circle();
-                circle.setFill(Color.BLACK);
+                circle.setFill(energyColor[0]);
                 circle.setVisible(false);
 
                 square.widthProperty().bind(cell.widthProperty());
@@ -207,7 +212,7 @@ public class SimulationPresenter implements SimulationChangeListener {
     private void updateMapGrid(WorldMap map) {
         for (Vector2d position : animalCircles.keySet()) {
             grassSquares.get(position).setVisible(map.isGrassAt(position));
-            grassSquares.get(position).setFill(Color.GREEN);
+            grassSquares.get(position).setFill(grassColor);
             animalCircles.get(position).setVisible(map.isAnimalAt(position));
             try {
                 if (map.isAnimalAt(position))
@@ -217,7 +222,7 @@ public class SimulationPresenter implements SimulationChangeListener {
             }
         }
         if (followedAnimal != null && followedAnimal.isAlive())
-            animalCircles.get(followedAnimal.getPosition()).setFill(Color.DARKVIOLET);
+            animalCircles.get(followedAnimal.getPosition()).setFill(followedAnimalColor);
     }
 
     private void updateSimulationStats(Simulation simulation) {
@@ -310,7 +315,7 @@ public class SimulationPresenter implements SimulationChangeListener {
         simulationChanged(simulation);
         Platform.runLater(() -> {
             simulation.getPopularAnimals().forEach(animal -> {
-                animalCircles.get(animal.getPosition()).setFill(Color.BLUE);
+                animalCircles.get(animal.getPosition()).setFill(dominantGenomeColor);
             });
         });
     }
@@ -321,7 +326,7 @@ public class SimulationPresenter implements SimulationChangeListener {
         Platform.runLater(() -> {
             simulation.getPreferredPositions().forEach(position -> {
                 grassSquares.get(position).setVisible(true);
-                grassSquares.get(position).setFill(Color.DARKGREEN);
+                grassSquares.get(position).setFill(preferredColor);
             });
         });
     }
