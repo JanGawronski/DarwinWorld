@@ -209,8 +209,11 @@ public class SimulationPresenter implements SimulationChangeListener {
             grassSquares.get(position).setVisible(map.isGrassAt(position));
             grassSquares.get(position).setFill(Color.GREEN);
             animalCircles.get(position).setVisible(map.isAnimalAt(position));
-            if (map.isAnimalAt(position))
+            try {
                 animalCircles.get(position).setFill(energyColor[Math.min(map.getTopAnimalAt(position).getEnergy(), 255)]);
+            } catch (IllegalArgumentException e) {
+                // no animal at position
+            }
         }
         if (followedAnimal != null && followedAnimal.isAlive())
             animalCircles.get(followedAnimal.getPosition()).setFill(Color.DARKVIOLET);
