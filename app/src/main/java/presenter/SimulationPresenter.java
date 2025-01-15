@@ -38,6 +38,7 @@ public class SimulationPresenter implements SimulationChangeListener {
     private static final Color preferredColor = Color.DARKGREEN;
     private static final Color dominantGenomeColor = Color.BLUE;
     private static final Color followedAnimalColor = Color.DARKVIOLET;
+    private static final Color currentMoveArrowColor = Color.RED;
     private static final Color[] energyColor = new Color[256];
 
     static {
@@ -300,7 +301,7 @@ public class SimulationPresenter implements SimulationChangeListener {
             String text = animalStats.genome().toString();
             Text before = new Text(text.substring(0, 2 * animalStats.activeGene()));
             Text colored = new Text(String.valueOf(text.charAt(2 * animalStats.activeGene())));
-            colored.setFill(Color.RED);
+            colored.setFill(currentMoveArrowColor);
             Text after = new Text(text.substring(2 * animalStats.activeGene() + 1));
             TextFlow textFlow = new TextFlow();
             textFlow.getChildren().addAll(before, colored, after);
