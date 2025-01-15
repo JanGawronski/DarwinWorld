@@ -11,15 +11,8 @@ import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
-import model.Vector2d;
-import model.elements.animal.Animal;
-import model.elements.animal.AnimalStats;
-import model.elements.animal.Genome;
-import model.map.WorldMap;
-import simulation.Simulation;
-import simulation.SimulationChangeListener;
-import simulation.SimulationConfig;
-import simulation.SimulationStats;
+import javafx.beans.binding.DoubleBinding;
+import javafx.beans.binding.Bindings;
 
 import java.io.BufferedWriter;
 import java.io.FileWriter;
@@ -29,6 +22,16 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
+
+import model.Vector2d;
+import model.elements.animal.Animal;
+import model.elements.animal.AnimalStats;
+import model.elements.animal.Genome;
+import model.map.WorldMap;
+import simulation.Simulation;
+import simulation.SimulationChangeListener;
+import simulation.SimulationConfig;
+import simulation.SimulationStats;
 
 public class SimulationPresenter implements SimulationChangeListener {
     private static final Color grassColor = Color.GREEN;
@@ -49,6 +52,10 @@ public class SimulationPresenter implements SimulationChangeListener {
     private Animal followedAnimal;
     private boolean saveStats;
     private String statsFileName;
+    @FXML
+    private HBox simulationRoot;
+    @FXML
+    private VBox controlBox;
     @FXML
     private GridPane mapGrid;
     @FXML
@@ -156,6 +163,17 @@ public class SimulationPresenter implements SimulationChangeListener {
     private void drawGrid(WorldMap map) {
         mapGrid.getColumnConstraints().clear();
         mapGrid.getRowConstraints().clear();
+
+            
+        DoubleBinding cellSizeBinding = Bindings.createDoubleBinding(() -> 
+            Math.min((simulationRoot.getWidth() - controlBox.getWidth()) / map.getWidth(), simulationRoot.getHeight() / map.getHeight()),
+            simulationRoot.widthProperty(), simulationRoot.heightProperty(), controlBox.widthProperty()
+        );
+
+        mapGrid.minWidthProperty().bind(cellSizeBinding.multiply(map.getWidth()));
+        mapGrid.maxWidthProperty().bind(cellSizeBinding.multiply(map.getWidth()));
+        mapGrid.minHeightProperty().bind(cellSizeBinding.multiply(map.getHeight()));
+        mapGrid.maxHeightProperty().bind(cellSizeBinding.multiply(map.getHeight()));
 
         for (int i = 0; i < map.getWidth(); i++) {
             ColumnConstraints colConst = new ColumnConstraints();
