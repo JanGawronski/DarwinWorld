@@ -106,10 +106,6 @@ public class WorldMap implements MoveConverter {
         return Set.copyOf(grasses.values());
     }
 
-    public Set<Vector2d> getGrassesPositions() {
-        return Collections.unmodifiableSet(grasses.keySet());
-    }
-
     public boolean isGrassAt(Vector2d position) {
         return grasses.containsKey(position);
     }
