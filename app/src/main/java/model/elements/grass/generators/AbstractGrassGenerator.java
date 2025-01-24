@@ -20,16 +20,8 @@ public abstract class AbstractGrassGenerator implements GrassGenerator {
         this.map = map;
         map.addListener(this);
         for (int x = 0; x < map.getWidth(); x++)
-            for (int y = 0; y < map.getHeight(); y++) {
-                Vector2d position = new Vector2d(x, y);
-                if (isPreferred(position)) {
-                    preferred.add(position);
-                    preferredIndices.put(position, preferred.size() - 1);
-                } else {
-                    notPreferred.add(position);
-                    notPreferredIndices.put(position, notPreferred.size() - 1);
-                }
-            }
+            for (int y = 0; y < map.getHeight(); y++)
+                add(new Vector2d(x, y));
     }
 
     @Override
