@@ -1,8 +1,8 @@
+package simulation;
 import model.AnimalConfigData;
 import model.Vector2d;
 import model.map.WorldMap;
 import org.junit.jupiter.api.Test;
-import simulation.Simulation;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -29,18 +29,19 @@ public class SimulationTest {
             removeDeadAnimals.setAccessible(true);
 
             AnimalConfigData config = new AnimalConfigData(1, 1, 1, true, 1, 1, 1);
-            WorldMap map = new WorldMap(10, 10);
-            Simulation simulation1 = new Simulation(map, config, true, 10, 1, 10, 0);
+            WorldMap map1 = new WorldMap(10, 10);
+            Simulation simulation1 = new Simulation(map1, config, true, 10, 1, 10, 0);
 
             removeDeadAnimals.invoke(simulation1);
 
-            assertEquals(0, map.getAnimalPositions().stream().mapToInt(position -> map.getAnimalsAt(position).size()).sum());
+            assertEquals(0, map1.getAnimalPositions().stream().mapToInt(position -> map1.getAnimalsAt(position).size()).sum());
 
-            Simulation simulation2 = new Simulation(map, config, true, 10, 1, 10, 1);
+            WorldMap map2 = new WorldMap(10, 10);
+            Simulation simulation2 = new Simulation(map2, config, true, 10, 1, 10, 1);
 
             removeDeadAnimals.invoke(simulation2);
 
-            assertEquals(10, map.getAnimalPositions().stream().mapToInt(position -> map.getAnimalsAt(position).size()).sum());
+            assertEquals(10, map2.getAnimalPositions().stream().mapToInt(position -> map2.getAnimalsAt(position).size()).sum());
         } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
             e.printStackTrace();
             fail();
