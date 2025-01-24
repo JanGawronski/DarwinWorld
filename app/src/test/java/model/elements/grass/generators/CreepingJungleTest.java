@@ -12,7 +12,6 @@ public class CreepingJungleTest {
     void doesntGenerateAlreadyGenerated() {
         WorldMap map = new WorldMap(2, 2);
         CreepingJungle creepingJungle = new CreepingJungle(map);
-        map.addListener(creepingJungle);
         map.place(new Grass(new Vector2d(0, 0)));
         map.place(new Grass(new Vector2d(0, 1)));
         map.place(new Grass(new Vector2d(1, 0)));

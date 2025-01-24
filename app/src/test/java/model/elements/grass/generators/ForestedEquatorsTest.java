@@ -12,7 +12,6 @@ public class ForestedEquatorsTest {
     void doesntGenerateAlreadyGenerated() {
         WorldMap map = new WorldMap(2, 2);
         ForestedEquators forestedEquators = new ForestedEquators(map);
-        map.addListener(forestedEquators);
         map.place(new Grass(new Vector2d(0, 0)));
         map.place(new Grass(new Vector2d(0, 1)));
         map.place(new Grass(new Vector2d(1, 0)));
