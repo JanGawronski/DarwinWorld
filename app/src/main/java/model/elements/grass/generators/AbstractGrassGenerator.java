@@ -34,6 +34,8 @@ public abstract class AbstractGrassGenerator implements GrassGenerator {
 
     @Override
     public Grass generateGrass() {
+        if (map.getEmptySquareCount() == 0)
+            throw new IllegalStateException("No empty squares left");
         List<Vector2d> positions = selectPositions(preferred, notPreferred);
         int index = ThreadLocalRandom.current().nextInt(positions.size());
         return new Grass(positions.get(index));
