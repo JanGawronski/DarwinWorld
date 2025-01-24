@@ -11,10 +11,11 @@ public class CreepingJungleTest {
     @Test
     void doesntGenerateAlreadyGenerated() {
         WorldMap map = new WorldMap(2, 2);
+        CreepingJungle creepingJungle = new CreepingJungle(map);
+        map.addListener(creepingJungle);
         map.place(new Grass(new Vector2d(0, 0)));
         map.place(new Grass(new Vector2d(0, 1)));
         map.place(new Grass(new Vector2d(1, 0)));
-        CreepingJungle creepingJungle = new CreepingJungle(map);
         Vector2d testPosition = new Vector2d(1, 1);
 
         for (int i = 0; i < 10; i++) {
