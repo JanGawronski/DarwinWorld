@@ -43,6 +43,7 @@ public class SimulationTest {
             assertEquals(10, map.getAnimalPositions().stream().mapToInt(position -> map.getAnimalsAt(position).size()).sum());
         } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
             e.printStackTrace();
+            fail();
         }
     }
 
@@ -76,6 +77,7 @@ public class SimulationTest {
 
         } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
             e.printStackTrace();
+            fail();
         }
     }
 
@@ -112,6 +114,7 @@ public class SimulationTest {
 
         } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
             e.printStackTrace();
+            fail();
         }
     }
 
@@ -135,6 +138,7 @@ public class SimulationTest {
 
         } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
             e.printStackTrace();
+            fail();
         }
     }
 
