@@ -25,7 +25,6 @@ public class CreepingJungleTest {
         }
     }
 
-
     @Test
     void inBounds() {
         WorldMap map = new WorldMap(10, 10);
@@ -35,6 +34,14 @@ public class CreepingJungleTest {
             Vector2d position = creepingJungle.generateGrass().getPosition();
             assertTrue(map.inBounds(position));
         }
+    }
 
+    @Test
+    void noFreePositions() {
+        WorldMap map = new WorldMap(1, 1);
+        CreepingJungle creepingJungle = new CreepingJungle(map);
+        map.place(new Grass(new Vector2d(0, 0)));
+
+        assertThrows(IllegalStateException.class, creepingJungle::generateGrass);
     }
 }

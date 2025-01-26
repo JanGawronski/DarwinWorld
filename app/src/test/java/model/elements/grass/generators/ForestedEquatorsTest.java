@@ -25,7 +25,6 @@ public class ForestedEquatorsTest {
         }
     }
 
-
     @Test
     void inBounds() {
         WorldMap map = new WorldMap(10, 10);
@@ -35,6 +34,14 @@ public class ForestedEquatorsTest {
             Vector2d position = forestedEquators.generateGrass().getPosition();
             assertTrue(map.inBounds(position));
         }
+    }
 
+    @Test
+    void noFreePositions() {
+        WorldMap map = new WorldMap(1, 1);
+        ForestedEquators creepingJungle = new ForestedEquators(map);
+        map.place(new Grass(new Vector2d(0, 0)));
+
+        assertThrows(IllegalStateException.class, creepingJungle::generateGrass);
     }
 }
