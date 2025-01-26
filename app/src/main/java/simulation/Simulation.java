@@ -147,7 +147,7 @@ public class Simulation implements Runnable {
     }
 
     private void growGrass() {
-        int toGenerate = Math.min(grassGrowthRate, map.getHeight() * map.getWidth() - map.getGrasses().size());
+        int toGenerate = Math.min(grassGrowthRate, map.getHeight() * map.getWidth() - map.getGrassCount());
         for (int i = 0; i < toGenerate; i++)
             map.place(grassGenerator.generateGrass());
     }
@@ -164,7 +164,7 @@ public class Simulation implements Runnable {
         synchronized (deadAnimals) {
             averageLifeSpan = deadAnimals.stream().mapToDouble(Animal::getLifeSpan).average().orElse(0);
         }
-        int grassCount = map.getGrasses().size();
+        int grassCount = map.getGrassCount();
         int emptySquareCount = map.getEmptySquareCount();
         Map<Genome, Integer> genomeIntegerHashMap = Collections.unmodifiableMap(genomePopularity);
         return new SimulationStats(day, animalCount, grassCount, emptySquareCount, genomeIntegerHashMap, averageEnergy, averageLifeSpan, averageChildrenCount);

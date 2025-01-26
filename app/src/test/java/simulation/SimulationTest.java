@@ -16,7 +16,7 @@ public class SimulationTest {
         WorldMap map = new WorldMap(10, 10);
         new Simulation(map, config, true, 10, 1, 10, 1);
 
-        assertEquals(10, map.getGrasses().size());
+        assertEquals(10, map.getGrassCount());
         assertEquals(10, map.getAnimalPositions().stream().mapToInt(position -> map.getAnimalsAt(position).size()).sum());
 
         map.getAnimalPositions().stream().map(map::getAnimalsAt).forEach(animalSet -> animalSet.forEach(animal -> assertEquals(1, animal.getEnergy())));
@@ -60,8 +60,8 @@ public class SimulationTest {
 
             eatGrass.invoke(simulation1);
 
-            assertTrue(map1.getGrasses().size() < 100);
-            assertTrue(map1.getGrasses().size() >= 90);
+            assertTrue(map1.getGrassCount() < 100);
+            assertTrue(map1.getGrassCount() >= 90);
 
             assertTrue(map1.getAnimalPositions().stream().flatMap((Vector2d position) -> map1.getAnimalsAt(position).stream())
                     .anyMatch(animal -> animal.getEnergy() > 1));
@@ -71,7 +71,7 @@ public class SimulationTest {
 
             eatGrass.invoke(simulation2);
 
-            assertEquals(0, map2.getGrasses().size());
+            assertEquals(0, map2.getGrassCount());
 
             assertFalse(map2.getAnimalPositions().stream().flatMap((Vector2d position) -> map2.getAnimalsAt(position).stream())
                     .anyMatch(animal -> animal.getEnergy() > 1));
@@ -131,11 +131,11 @@ public class SimulationTest {
 
             growGrass.invoke(simulation);
 
-            assertEquals(60, map.getGrasses().size());
+            assertEquals(60, map.getGrassCount());
 
             growGrass.invoke(simulation);
 
-            assertEquals(100, map.getGrasses().size());
+            assertEquals(100, map.getGrassCount());
 
         } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
             e.printStackTrace();
