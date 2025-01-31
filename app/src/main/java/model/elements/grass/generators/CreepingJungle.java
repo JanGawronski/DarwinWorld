@@ -28,7 +28,7 @@ public class CreepingJungle extends AbstractGrassGenerator {
         }
 
         super.mapChanged(map, position);
-        
+
         for (MapDirection mapDirection : MapDirection.values()) {
             Vector2d neighbour = position.add(mapDirection.toMovementVector());
             if (map.inBounds(neighbour) && !map.isGrassAt(neighbour))

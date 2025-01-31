@@ -20,7 +20,7 @@ public class Genome {
         this.geneString = Arrays.stream(genes).mapToObj(gene -> GENE_CHARS[gene]).collect(Collectors.joining(" "));
     }
 
-    public static Genome breedGenome(Genome left, int leftEnergy, Genome right, int rightEnergy, GeneArrayMutator mutator) {
+    public static Genome breedGenome(Genome left, int leftEnergy, Genome right, int rightEnergy, GeneArrayMutator mutator) { // nazwa
         if (left.length() != right.length())
             throw new IllegalArgumentException("Genomes have to be the same length");
         if (leftEnergy <= 0 || rightEnergy <= 0)

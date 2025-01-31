@@ -6,7 +6,7 @@ import model.map.MapChangeListener;
 
 import java.util.List;
 
-public interface GrassGenerator  extends MapChangeListener{
+public interface GrassGenerator extends MapChangeListener {
     Grass generateGrass();
 
     List<Vector2d> getPreferred();

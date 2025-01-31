@@ -1,4 +1,4 @@
-package model.elements.grass.generators;
+package model.elements.grass.generators; // czy to na pewno powinno być w pakiecie elements?
 
 import model.Vector2d;
 import model.elements.grass.Grass;
@@ -61,7 +61,7 @@ public abstract class AbstractGrassGenerator implements GrassGenerator {
             positions = notPreferred;
             indices = notPreferredIndices;
         }
-        
+
         positions.add(position);
         indices.put(position, positions.size() - 1);
     }

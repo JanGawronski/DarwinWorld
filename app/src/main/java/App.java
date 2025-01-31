@@ -21,7 +21,7 @@ public class App extends Application {
             try {
                 showSimulationWindow(config, saveStats);
             } catch (IOException e) {
-                e.printStackTrace();
+                e.printStackTrace(); // czy to dobry wybór?
             }
         });
         primaryStage.setScene(new Scene(startRoot));

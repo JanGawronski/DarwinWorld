@@ -1,4 +1,5 @@
 package simulation;
+
 import model.AnimalConfigData;
 import model.Vector2d;
 import model.map.WorldMap;

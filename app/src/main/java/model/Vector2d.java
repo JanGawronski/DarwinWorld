@@ -2,7 +2,7 @@ package model;
 
 public record Vector2d(int x, int y) {
 
-    public static Vector2d add(Vector2d v1, Vector2d v2) {
+    public static Vector2d add(Vector2d v1, Vector2d v2) { // czemu static?
         return new Vector2d(v1.x + v2.x, v1.y + v2.y);
     }
 

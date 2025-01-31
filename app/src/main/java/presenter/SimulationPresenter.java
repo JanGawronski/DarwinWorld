@@ -165,10 +165,10 @@ public class SimulationPresenter implements SimulationChangeListener {
         mapGrid.getColumnConstraints().clear();
         mapGrid.getRowConstraints().clear();
 
-            
-        DoubleBinding cellSizeBinding = Bindings.createDoubleBinding(() -> 
-            Math.min((simulationRoot.getWidth() - controlBox.getWidth()) / map.getWidth(), simulationRoot.getHeight() / map.getHeight()),
-            simulationRoot.widthProperty(), simulationRoot.heightProperty(), controlBox.widthProperty()
+
+        DoubleBinding cellSizeBinding = Bindings.createDoubleBinding(() ->
+                        Math.min((simulationRoot.getWidth() - controlBox.getWidth()) / map.getWidth(), simulationRoot.getHeight() / map.getHeight()),
+                simulationRoot.widthProperty(), simulationRoot.heightProperty(), controlBox.widthProperty()
         );
 
         mapGrid.minWidthProperty().bind(cellSizeBinding.multiply(map.getWidth()));
@@ -217,7 +217,7 @@ public class SimulationPresenter implements SimulationChangeListener {
 
             }
         }
-    }
+    } // ta metoda jest przerośnięta
 
     @Override
     public void simulationChanged(Simulation simulation) {
@@ -262,7 +262,7 @@ public class SimulationPresenter implements SimulationChangeListener {
             saveStats(simulationStats);
     }
 
-    private void saveStats(SimulationStats simulationStats) {
+    private void saveStats(SimulationStats simulationStats) { // czy to zadanie dla prezentera?
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(statsFileName, true))) {
             writer.write(simulationStats.day() + ",");
             writer.write(simulationStats.animalsCount() + ",");

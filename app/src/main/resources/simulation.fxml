@@ -17,11 +17,12 @@
       fx:controller="presenter.SimulationPresenter"
       fx:id="simulationRoot">
     <VBox spacing="10" minWidth="300" fx:id="controlBox">
-        <Button fx:id="resumeButton" text="Resume simulation" onAction="#resumeSimulation" visible="false" managed="false"/>
+        <Button fx:id="resumeButton" text="Resume simulation" onAction="#resumeSimulation" visible="false"
+                managed="false"/>
         <Button fx:id="stopButton" text="Stop simulation" onAction="#stopSimulation"/>
         <HBox>
             <Label text="Simulation days per second: "/>
-            <Spinner fx:id="simulationSpeed" min="1" max="100" initialValue="1" editable="true"  prefWidth="100"/>
+            <Spinner fx:id="simulationSpeed" min="1" max="100" initialValue="1" editable="true" prefWidth="100"/>
         </HBox>
         <HBox>
             <Label text="Day: "/>
@@ -52,10 +53,13 @@
             <Label fx:id="averageChildrenCount"/>
         </HBox>
         <Label text="Top 10 genomes:"/>
-        <Label fx:id="topGenomes" />
-        <Button fx:id="showDominantGenomeAnimalsButton" text="Highlight animals with dominant genome" onAction="#showDominantGenomeAnimals" visible="false" managed="false"/>
-        <Button fx:id="showPreferredSquaresButton" text="Highlight squares preferred by grass" onAction="#showPreferredSquares" visible="false" managed="false"/>
-        <Label fx:id="notFollowingAnimal" text="${'Not following any animal.\nStop simulation and click on animal to follow it.'}"/>
+        <Label fx:id="topGenomes"/>
+        <Button fx:id="showDominantGenomeAnimalsButton" text="Highlight animals with dominant genome"
+                onAction="#showDominantGenomeAnimals" visible="false" managed="false"/>
+        <Button fx:id="showPreferredSquaresButton" text="Highlight squares preferred by grass"
+                onAction="#showPreferredSquares" visible="false" managed="false"/>
+        <Label fx:id="notFollowingAnimal"
+               text="${'Not following any animal.\nStop simulation and click on animal to follow it.'}"/>
         <VBox fx:id="followedAnimalBox" visible="false" managed="false">
             <HBox>
                 <Label text="Followed animal: "/>
@@ -94,11 +98,11 @@
     </VBox>
     <GridPane fx:id="mapGrid" gridLinesVisible="true" HBox.hgrow="ALWAYS" VBox.vgrow="ALWAYS">
         <columnConstraints>
-            <ColumnConstraints hgrow="ALWAYS" minWidth="1" />
+            <ColumnConstraints hgrow="ALWAYS" minWidth="1"/>
         </columnConstraints>
         <rowConstraints>
-            <RowConstraints vgrow="ALWAYS" minHeight="1" />
+            <RowConstraints vgrow="ALWAYS" minHeight="1"/>
         </rowConstraints>
     </GridPane>
-    
+
 </HBox>

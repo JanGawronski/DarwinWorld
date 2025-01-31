@@ -14,10 +14,10 @@
       minHeight="620.0" minWidth="500.0"
       fx:controller="presenter.StartPresenter">
     <fx:define>
-        <ToggleGroup fx:id="plantGrowthVariant" />
+        <ToggleGroup fx:id="plantGrowthVariant"/>
     </fx:define>
     <fx:define>
-        <ToggleGroup fx:id="behaviourVariant" />
+        <ToggleGroup fx:id="behaviourVariant"/>
     </fx:define>
     <HBox>
         <Label text="Height of a map: "/>
@@ -41,7 +41,8 @@
     </HBox>
     <HBox>
         <Label text="Plant growth variant: "/>
-        <RadioButton fx:id="forestedEquators" text="Forested equators" toggleGroup="$plantGrowthVariant" selected="true"/>
+        <RadioButton fx:id="forestedEquators" text="Forested equators" toggleGroup="$plantGrowthVariant"
+                     selected="true"/>
         <RadioButton fx:id="creepingJungle" text="Creeping jungle" toggleGroup="$plantGrowthVariant"/>
     </HBox>
     <HBox>
@@ -70,7 +71,8 @@
     </HBox>
     <HBox>
         <Label text="Behaviour variant: "/>
-        <RadioButton fx:id="fullPredestination" text="Full predestination" toggleGroup="$behaviourVariant" selected="true"/>
+        <RadioButton fx:id="fullPredestination" text="Full predestination" toggleGroup="$behaviourVariant"
+                     selected="true"/>
         <RadioButton fx:id="bitOfMadness" text="A bit of madness" toggleGroup="$behaviourVariant"/>
     </HBox>
     <HBox>

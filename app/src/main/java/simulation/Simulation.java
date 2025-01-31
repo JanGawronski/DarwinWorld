@@ -1,4 +1,5 @@
 package simulation;
+
 import model.AnimalConfigData;
 import model.Vector2d;
 import model.elements.animal.Animal;
@@ -15,7 +16,7 @@ import java.util.concurrent.*;
 
 
 public class Simulation implements Runnable {
-    private final Set<Animal> animals = Collections.synchronizedSet(new HashSet<>());
+    private final Set<Animal> animals = Collections.synchronizedSet(new HashSet<>()); // Panowie wiedzą, że to jest mocno niewydajne?
     private final Set<Animal> deadAnimals = Collections.synchronizedSet(new HashSet<>());
     private final WorldMap map;
     private final GrassGenerator grassGenerator;
@@ -83,7 +84,7 @@ public class Simulation implements Runnable {
             }
         } catch (InterruptedException e) {
             executor.shutdownNow();
-            Thread.currentThread().interrupt();
+            Thread.currentThread().interrupt(); // jaki jest sens wysyłać interrupt sobie samemu?
         }
     }
 
@@ -182,7 +183,7 @@ public class Simulation implements Runnable {
     public WorldMap getMap() {
         return map;
     }
-    
+
     private void notifyListeners() {
         listeners.forEach(listener -> listener.simulationChanged(this));
     }
